@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Statement of Financial Position (Interactive)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid: #2c3e50;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #34495e;
+            margin-bottom: 3px;
+        }
+
+        .date {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .category-header {
+            background: #ecf0f1 !important;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .subcategory {
+            padding-left: 30px !important;
+        }
+
+        .subsubcategory {
+            padding-left: 50px !important;
+            font-size: 12px;
+        }
+
+        .total-row {
+            font-weight: 600;
+            background: #f8f9fa;
+            border-top: 2px solid #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .grand-total {
+            font-weight: 700;
+            background: #d5dbdb;
+            font-size: 14px;
+        }
+
+        .excellent { color: #27ae60; font-weight: 600; }
+        .good { color: #16a085; }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #999;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 320px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -160px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.5;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2c3e50 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .info-box {
+            background: #ebf5fb;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            color: #2874a6;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .success-box {
+            background: #eafaf1;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box h3 {
+            color: #1e8449;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .equation-box {
+            background: #f8f9fa;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .equation-box .number {
+            color: #27ae60;
+            font-size: 20px;
+        }
+
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+            .tooltip .tooltiptext { display: none; }
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+
+        .metric-card h4 {
+            color: #2c3e50;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #27ae60;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Camp Downer, Inc.</h1>
+            <h2>Statement of Financial Position</h2>
+            <p class="date">As of November 13, 2025 | Cash Basis</p>
+        </header>
+
+        <div class="info-box" style="background: #e8f4f8; border-left-color: #3498db;">
+            <h3>📄 Source Document</h3>
+            <p style="margin-bottom: 5px;">This interactive version is based on the original PDF:</p>
+            <p><a href="https://drive.google.com/file/d/1UR7ZQ2ELv_qkJBMbgC7KU5sXgv115071/view?usp=sharing"
+                  style="color: #2874a6; font-weight: 600; text-decoration: none; border-bottom: 1px solid #2874a6;"
+                  target="_blank">
+                📎 View Original PDF in Google Drive →
+            </a></p>
+        </div>
+
+        <div class="success-box">
+            <h3>📊 What is a Statement of Financial Position?</h3>
+            <p>This is the nonprofit version of a <strong>Balance Sheet</strong>.</p>
+            <p style="margin-top: 8px;">It shows: <strong>What we OWN</strong> (Assets) minus <strong>What we OWE</strong> (Liabilities) = <strong>Our NET WORTH</strong> (Equity)</p>
+            <p style="margin-top: 8px;">Think of it as a financial "snapshot" taken on November 13, 2025 at midnight.</p>
+        </div>
+
+        <div class="equation-box">
+            <div style="margin-bottom: 10px;">THE FUNDAMENTAL EQUATION</div>
+            <div>
+                <span class="number">$1,628,769</span> ASSETS =
+                <span class="number">$8,267</span> LIABILITIES +
+                <span class="number">$1,620,502</span> EQUITY
+            </div>
+            <div style="font-size: 14px; margin-top: 10px; color: #7f8c8d;">
+                (This equation ALWAYS balances - that's why it's called a "balance" sheet!)
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 70%;">ACCOUNT</th>
+                    <th class="number" style="width: 30%;">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ASSETS -->
+                <tr class="category-header">
+                    <td colspan="2">ASSETS (What We Own)</td>
+                </tr>
+
+                <tr class="category-header">
+                    <td colspan="2" style="padding-left: 15px;">
+                        <span class="tooltip">Current Assets ($1,022,509 - 62.8% of assets)
+                            <span class="tooltiptext">
+                                <strong>What are "Current Assets"?</strong><br><br>
+                                Cash or assets that will become cash within one year.<br><br>
+                                Think of these as "liquid" assets - they flow quickly like water!
+                            </span>
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Bank Accounts</td>
+                    <td class="number"></td>
+                </tr>
+
+                <tr>
+                    <td class="subsubcategory">
+                        <span class="tooltip">Basic Checking - 2835
+                            <span class="tooltiptext">
+                                <strong>Our main operating account</strong><br><br>
+                                Used for: Paying bills, payroll, daily expenses<br><br>
+                                This is like your personal checking account.<br><br>
+                                Current balance covers 3.3 months of expenses - healthy!
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">191,173</td>
+                </tr>
+
+                <tr>
+                    <td class="subsubcategory">
+                        <span class="tooltip">Scholarship Fund - 9129
+                            <span class="tooltiptext">
+                                <strong>Dedicated scholarship account</strong><br><br>
+                                Tracks restricted scholarship donations.<br><br>
+                                Can ONLY be used for scholarships (donor restriction).<br><br>
+                                <strong>Important Note:</strong> The bank balance shows $46,556, but the actual available funds are approximately $7,000.<br><br>
+                                This is due to a syncing issue between our bank and QuickBooks. We have already transferred out funds for 2024 and 2025 scholarship disbursements (~$39,000), but QuickBooks has not yet reflected these transfers.<br><br>
+                                At $19,570/year in scholarships, the actual $7,000 available covers about 4 months.
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">46,556</td>
+                </tr>
+
+                <tr>
+                    <td class="subsubcategory">
+                        <span class="tooltip excellent">Money Market Account - 2061
+                            <span class="tooltiptext">
+                                <strong>Our emergency reserves!</strong><br><br>
+                                This is like a high-interest savings account.<br><br>
+                                Purpose: Emergency fund and short-term savings<br><br>
+                                Interest rate: Probably 3-5% currently<br>
+                                Annual earnings: ~$10,000-12,000<br><br>
+                                Why keep money here instead of investing?<br>
+                                • FDIC insured (safe!)<br>
+                                • Quick access if needed<br>
+                                • Better interest than checking
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number excellent">254,091</td>
+                </tr>
+
+                <tr>
+                    <td class="subsubcategory">Petty Cash</td>
+                    <td class="number">178</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td class="subcategory"><strong>Total Bank Accounts</strong></td>
+                    <td class="number excellent"><strong>491,998</strong></td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip excellent">Fidelity Investment Account
+                            <span class="tooltiptext">
+                                <strong>Our long-term reserves!</strong><br><br>
+                                Managed by: Pochop Financial Management<br><br>
+                                Current value: $526,780<br>
+                                This year's return: 6.75% (excellent!)<br><br>
+                                What's in it:<br>
+                                • 62% in safe money market<br>
+                                • 38% in stock ETFs<br><br>
+                                See the Fidelity statement for full details!
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number excellent">526,780</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Inventory</td>
+                    <td class="number">3,730</td>
+                </tr>
+
+                <tr class="grand-total">
+                    <td><strong>TOTAL CURRENT ASSETS</strong></td>
+                    <td class="number excellent"><strong>1,022,509</strong></td>
+                </tr>
+
+                <tr class="category-header">
+                    <td colspan="2" style="padding-left: 15px;">
+                        <span class="tooltip">Fixed Assets ($606,260 - 37.2% of assets)
+                            <span class="tooltiptext">
+                                <strong>What are "Fixed Assets"?</strong><br><br>
+                                Long-term assets we use to operate camp (not for resale).<br><br>
+                                Also called: Capital Assets or Property, Plant & Equipment<br><br>
+                                Key characteristic: These last MANY years!
+                            </span>
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip">Leasehold Improvements
+                            <span class="tooltiptext">
+                                <strong>Our buildings and major improvements</strong><br><br>
+                                Includes:<br>
+                                • Cabins<br>
+                                • Dining hall<br>
+                                • Bath houses<br>
+                                • Program buildings<br>
+                                • Pool structure<br>
+                                • Major renovations<br><br>
+                                This is the original cost (before depreciation).
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">1,126,194</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Equipment</td>
+                    <td class="number">140,395</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Vehicles</td>
+                    <td class="number">5,800</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Software</td>
+                    <td class="number">4,700</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip">Accumulated Depreciation
+                            <span class="tooltiptext">
+                                <strong>The "used up" portion of our assets</strong><br><br>
+                                This is the TOTAL of all depreciation over the years.<br><br>
+                                Example:<br>
+                                Building cost $500,000 ten years ago.<br>
+                                Each year we "depreciate" $20,000.<br>
+                                After 10 years: $200,000 accumulated depreciation.<br>
+                                Book value: $500,000 - $200,000 = $300,000<br><br>
+                                Our assets are about 52.5% depreciated (about halfway through useful life).
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">(670,829)</td>
+                </tr>
+
+                <tr class="grand-total">
+                    <td><strong>TOTAL FIXED ASSETS (Net Book Value)</strong></td>
+                    <td class="number"><strong>606,260</strong></td>
+                </tr>
+
+                <tr class="grand-total" style="background: #d5f4e6; font-size: 16px;">
+                    <td><strong>
+                        <span class="tooltip excellent">TOTAL ASSETS
+                            <span class="tooltiptext">
+                                <strong>Everything we own!</strong><br><br>
+                                Breakdown:<br>
+                                • Cash in banks: $492,000 (30%)<br>
+                                • Investments: $527,000 (32%)<br>
+                                • Buildings/Equipment: $606,000 (37%)<br>
+                                • Other: $4,000 (1%)<br><br>
+                                This is a healthy mix of liquid assets (cash/investments) and infrastructure (facilities).
+                            </span>
+                        </span>
+                    </strong></td>
+                    <td class="number excellent"><strong>1,628,769</strong></td>
+                </tr>
+
+                <!-- LIABILITIES -->
+                <tr class="category-header">
+                    <td colspan="2">LIABILITIES (What We Owe)</td>
+                </tr>
+
+                <tr class="category-header">
+                    <td colspan="2" style="padding-left: 15px;">Current Liabilities</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip excellent">Accounts Payable
+                            <span class="tooltiptext">
+                                <strong>Money we owe to vendors</strong><br><br>
+                                Example: Received invoice but haven't paid it yet.<br><br>
+                                $0 means we've paid all our bills! ✓ EXCELLENT
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number excellent">0</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip">M&T Business Credit Card
+                            <span class="tooltiptext">
+                                <strong>Our ONLY debt!</strong><br><br>
+                                Outstanding credit card balance: $8,255<br><br>
+                                Typical use: Business expenses, online purchases<br><br>
+                                This will be paid when the bill comes.
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">8,255</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">VT Saves</td>
+                    <td class="number">11</td>
+                </tr>
+
+                <tr class="grand-total" style="background: #eafaf1;">
+                    <td><strong>
+                        <span class="tooltip excellent">TOTAL LIABILITIES
+                            <span class="tooltiptext">
+                                <strong>🎉 ESSENTIALLY DEBT-FREE!</strong><br><br>
+                                We owe only $8,267 (basically just a credit card balance).<br><br>
+                                <strong>Debt Ratio:</strong><br>
+                                $8,267 ÷ $1,628,769 = 0.51%<br><br>
+                                We own 99.49% of everything free and clear!<br><br>
+                                Benchmark: Under 50% is healthy<br>
+                                Our ratio: 0.51% - OUTSTANDING!
+                            </span>
+                        </span>
+                    </strong></td>
+                    <td class="number excellent"><strong>8,267</strong></td>
+                </tr>
+
+                <!-- EQUITY -->
+                <tr class="category-header">
+                    <td colspan="2">EQUITY (Our Net Worth)</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip excellent">Unrestricted Fund Balance
+                            <span class="tooltiptext">
+                                <strong>Accumulated surpluses from previous years</strong><br><br>
+                                "Unrestricted" means we can use this money for ANYTHING.<br><br>
+                                This is like your life savings built up over many years.<br><br>
+                                How we got to $1,500,081:<br>
+                                Year after year of good management, we had surpluses that accumulated over decades!
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number excellent">1,500,081</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip excellent">Net Income (This Year)
+                            <span class="tooltiptext">
+                                <strong>This year's profit!</strong><br><br>
+                                From the Statement of Activity.<br><br>
+                                At year-end, this will be added to the Fund Balance.<br><br>
+                                How it works:<br>
+                                Beginning Balance: $1,500,081<br>
+                                Plus Net Income: $120,421<br>
+                                Equals Ending Equity: $1,620,502
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number excellent">120,421</td>
+                </tr>
+
+                <tr class="grand-total" style="background: #d5f4e6; font-size: 16px;">
+                    <td><strong>
+                        <span class="tooltip excellent">TOTAL EQUITY (Net Worth)
+                            <span class="tooltiptext">
+                                <strong>Our complete net worth!</strong><br><br>
+                                If we sold everything ($1,628,769)<br>
+                                And paid all debts ($8,267)<br>
+                                We'd have $1,620,502 left.<br><br>
+                                This represents decades of careful financial stewardship!<br><br>
+                                We grew our net worth by $120,421 this year!
+                            </span>
+                        </span>
+                    </strong></td>
+                    <td class="number excellent"><strong>1,620,502</strong></td>
+                </tr>
+
+                <tr class="grand-total" style="background: #d5dbdb; font-size: 16px;">
+                    <td><strong>TOTAL LIABILITIES & EQUITY</strong></td>
+                    <td class="number"><strong>1,628,769</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="success-box">
+            <h3>✅ The Equation Balances!</h3>
+            <p style="font-family: 'Courier New', monospace; font-size: 14px;">
+                Assets: $1,628,769 = Liabilities: $8,267 + Equity: $1,620,502<br>
+                $1,628,769 = $1,628,769 ✓
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Key Financial Health Metrics</h3>
+
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <h4>Liquidity (Can we pay bills?)</h4>
+                    <div class="metric-value">8.5 months</div>
+                    <div class="metric-label">Months of cash on hand<br>Benchmark: 3-6 months ✓ EXCELLENT</div>
+                </div>
+
+                <div class="metric-card">
+                    <h4>Current Ratio</h4>
+                    <div class="metric-value">123.7 : 1</div>
+                    <div class="metric-label">For every $1 we owe, we have $123.70<br>Benchmark: Above 2:1 ✓ EXCEPTIONAL</div>
+                </div>
+
+                <div class="metric-card">
+                    <h4>Debt Ratio</h4>
+                    <div class="metric-value">0.51%</div>
+                    <div class="metric-label">Only 0.51% of assets financed by debt<br>Benchmark: Under 50% ✓ OUTSTANDING</div>
+                </div>
+
+                <div class="metric-card">
+                    <h4>Equity Ratio</h4>
+                    <div class="metric-value">99.49%</div>
+                    <div class="metric-label">We OWN 99.49% of everything!<br>Essentially debt-free ✓ EXCEPTIONAL</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>🎯 What This Balance Sheet Tells Us</h3>
+            <p style="margin-bottom: 10px;"><strong>Strengths:</strong></p>
+            <ul style="margin-left: 25px; margin-bottom: 15px; line-height: 1.8;">
+                <li><strong>Exceptional Liquidity:</strong> 8.5 months of cash reserves (we could operate for 8.5 months with no income!)</li>
+                <li><strong>Virtually Debt-Free:</strong> Only $8,267 in liabilities (0.51% debt ratio)</li>
+                <li><strong>Strong Net Worth:</strong> $1.6M in equity built over decades</li>
+                <li><strong>Diversified Assets:</strong> Good mix of cash (30%), investments (32%), and facilities (37%)</li>
+                <li><strong>Financially Independent:</strong> Don't need to borrow money - can fund initiatives internally</li>
+            </ul>
+
+            <p style="margin-bottom: 10px;"><strong>Considerations:</strong></p>
+            <ul style="margin-left: 25px; line-height: 1.8;">
+                <li><strong>Aging Infrastructure:</strong> 52.5% of assets depreciated - may need major renovations soon</li>
+                <li><strong>Book Value vs. Market Value:</strong> Buildings worth $606K on books, but market value likely higher (or could need repairs)</li>
+                <li><strong>Capital Planning Needed:</strong> Should create 5-10 year plan for major facility investments</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #7f8c8d; text-align: center;">
+            <p>Interactive Report Generated for Camp Downer Board | Hover over highlighted items for detailed explanations</p>
+            <p>For questions, contact the Finance Committee Chair</p>
+        </div>
+    </div>
+</body>
+</html>

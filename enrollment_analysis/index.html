@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camp Downer — Registration Analysis 2021–2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --dark-green: #1B4332;
+    --med-green: #2D6A4F;
+    --light-green: #52B788;
+    --accent: #D4A373;
+    --cream: #FEFAE0;
+    --light-bg: #F5F1EB;
+    --dark-text: #1B1B1B;
+    --muted: #5C5C5C;
+    --red: #C1121F;
+    --orange: #E76F51;
+    --pink: #A26769;
+    --teal: #028090;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--light-bg);
+    color: var(--dark-text);
+    line-height: 1.6;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    background: linear-gradient(135deg, var(--dark-green) 0%, var(--med-green) 100%);
+    color: #fff;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 2.6rem;
+    letter-spacing: 4px;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+  .hero .subtitle {
+    color: var(--accent);
+    font-size: 1.15rem;
+    margin-bottom: 0.3rem;
+  }
+  .hero .topics {
+    color: #B7E4C7;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero .stat-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .hero .stat-bar .stat {
+    text-align: center;
+  }
+  .hero .stat-bar .stat .num {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .hero .stat-bar .stat .label {
+    font-size: 0.8rem;
+    color: #B7E4C7;
+  }
+
+  /* ---- LAYOUT ---- */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  /* ---- SECTION ---- */
+  section {
+    margin-top: 2.5rem;
+  }
+  section h2 {
+    font-size: 1.6rem;
+    color: var(--dark-green);
+    border-bottom: 3px solid var(--light-green);
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.6rem;
+  }
+
+  /* "Why this matters" boxes */
+  .insight {
+    background: #fff;
+    border-left: 4px solid var(--light-green);
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+  .insight strong { color: var(--dark-green); }
+
+  .insight-warn {
+    border-left-color: var(--red);
+  }
+  .insight-warn strong { color: var(--red); }
+
+  /* Cards row */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card .val {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .card .title { font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem; }
+  .card .sub { font-size: 0.75rem; color: var(--muted); }
+
+  /* Chart wrapper */
+  .chart-wrap {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .chart-wrap canvas { max-height: 340px; }
+
+  /* Side-by-side */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+  }
+  thead th {
+    background: var(--med-green);
+    color: #fff;
+    padding: 0.55rem 0.75rem;
+    text-align: center;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 0.45rem 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  tbody tr:nth-child(even) { background: #fafaf7; }
+
+  .highlight-row { font-weight: 600; }
+  .text-red { color: var(--red); font-weight: 600; }
+  .text-green { color: var(--light-green); font-weight: 600; }
+  .text-orange { color: var(--orange); font-weight: 600; }
+
+  /* Gender comparison cards */
+  .gender-card {
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .gender-card .pct { font-size: 2.5rem; font-weight: 700; }
+  .gender-card .detail { font-size: 0.85rem; color: var(--muted); }
+  .girls-bg { background: #F8F0EE; }
+  .boys-bg { background: #EDF5F5; }
+
+  /* Takeaway grid */
+  .takeaway-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .takeaway {
+    background: var(--med-green);
+    color: var(--cream);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+  @media (max-width: 600px) {
+    .takeaway { grid-template-columns: 1fr; }
+  }
+  .takeaway .tk-title {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .takeaway .tk-body {
+    font-size: 0.9rem;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  /* Utility */
+  .note {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <h1>CAMP DOWNER</h1>
+  <p class="subtitle">Registration Analysis &nbsp;|&nbsp; Summer 2021 – 2026</p>
+  <p class="topics">Enrollment &bull; Retention &bull; Age &amp; Gender &bull; Activities &bull; Waitlist &bull; Churn</p>
+  <div class="stat-bar">
+    <div class="stat"><div class="num">2,307</div><div class="label">Unique campers (2021–2025)</div></div>
+    <div class="stat"><div class="num">801</div><div class="label">Registered for 2026</div></div>
+    <div class="stat"><div class="num">155</div><div class="label">On 2026 waitlist</div></div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ ENROLLMENT ============ -->
+<section>
+  <h2>Enrollment Overview</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> The total number of campers who registered each summer. This is our top-line number — how many families chose Camp Downer that year. It does <em>not</em> include waitlisted campers. 2026 registration is still in progress, so that number will likely grow.
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Important context:</strong> Starting in 2025, Camp Downer implemented an enhanced staffing plan requiring 2 counselors per cabin. This reduced available camper beds by <strong>14 per session</strong> — across 7 sessions, that's <strong>98 fewer session-slots</strong>. The actual session-registration decline was 100, meaning the staffing plan accounts for <strong>98% of the drop</strong>. In other words, the 2024→2025 enrollment dip was almost entirely a deliberate capacity decision, not declining demand.
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="enrollChart"></canvas>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="val" style="color:var(--light-green)">+26.8%</div>
+      <div class="title">2021 → 2022</div>
+      <div class="sub">Biggest year of growth</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--muted)">916</div>
+      <div class="title">Peak (2024)</div>
+      <div class="sub">All-time high enrollment</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--orange)">-3.1%</div>
+      <div class="title">2024 → 2025</div>
+      <div class="sub">Capacity reduced (staffing plan)</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--red)">-9.8%</div>
+      <div class="title">2025 → 2026*</div>
+      <div class="sub">Registration in progress</div>
+    </div>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Why it matters:</strong> After steady growth from 2021 to 2024, enrollment dipped in 2025 — but the numbers show this was <em>almost entirely</em> the result of the enhanced staffing plan. With 14 fewer beds per session across 7 sessions, Camp Downer had 98 fewer session-slots available — and the actual decline was only 100 session-registrations. That means <strong>98% of the drop is explained by the staffing decision alone</strong>. Demand didn't shrink; capacity did. For 2026, registration is still open and 155 families are already waitlisted — meaning total demand (956) actually exceeds any prior year. The real concern isn't interest — it's that we're losing returning campers faster than we're adding new ones.
+  </div>
+</section>
+
+<!-- ============ RETENTION ============ -->
+<section>
+  <h2>Retention &amp; Churn</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> Of all campers who attended in a given year, how many came back the following year ("retained") versus didn't return ("churned"). <em>Retention rate</em> is the percentage who came back. A healthy camp retains 55–65% of its campers each year — the rest naturally leave due to aging out, moving, schedule conflicts, etc.
+  </div>
+
+  <div class="chart-wrap">
+    <table>
+      <thead>
+        <tr><th>Transition</th><th>Returning</th><th>New</th><th>Churned</th><th>Retention</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2021 → 2022</td><td>427</td><td>476</td><td>285</td><td>60.0%</td></tr>
+        <tr><td>2022 → 2023</td><td>495</td><td>417</td><td>408</td><td>54.8%</td></tr>
+        <tr><td>2023 → 2024</td><td>520</td><td>396</td><td>392</td><td>57.0%</td></tr>
+        <tr><td>2024 → 2025</td><td>519</td><td>369</td><td>397</td><td>56.7%</td></tr>
+        <tr class="highlight-row"><td>2025 → 2026*</td><td>464</td><td>337</td><td class="text-red">424</td><td class="text-red">52.3%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two-col">
+    <div class="chart-wrap">
+      <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">2021 Cohort — Where Are They Now?</h3>
+      <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.75rem;">Of the 712 campers who started in 2021, here's how many returned each subsequent year. This shows how quickly a cohort shrinks over time.</p>
+      <canvas id="cohortChart"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">New Camper Pipeline</h3>
+      <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.75rem;">The number of first-time campers joining each year. This pipeline is how we replace churned campers, and it's been declining steadily — from 476 in 2022 to 337 in 2026.</p>
+      <canvas id="newCamperChart"></canvas>
+    </div>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Why it matters:</strong> Retention has dropped to its lowest point — 52%. That means nearly half of last year's campers aren't coming back. At the same time, fewer new campers are entering the pipeline (337 vs. 476 two years ago). This double squeeze is what's driving the enrollment decline. If we can move retention even a few percentage points, the compounding effect on enrollment is significant.
+  </div>
+</section>
+
+<!-- ============ WHO CHURNS ============ -->
+<section>
+  <h2>Who Churns vs. Who Stays</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> A closer look at the 424 campers from 2025 who have not registered for 2026. "Churned" doesn't necessarily mean lost forever — 74 are on the waitlist. But 350 show zero 2026 activity, meaning they haven't registered or waitlisted for any session.
+  </div>
+
+  <div class="cards">
+    <div class="card"><div class="val" style="color:var(--red)">52%</div><div class="title">Retention Rate</div><div class="sub">All-time low</div></div>
+    <div class="card"><div class="val" style="color:var(--red)">424</div><div class="title">Churned Campers</div><div class="sub">Not registered for 2026</div></div>
+    <div class="card"><div class="val" style="color:var(--orange)">74</div><div class="title">On Waitlist</div><div class="sub">Want to return, no spot yet</div></div>
+    <div class="card"><div class="val" style="color:var(--red)">350</div><div class="title">Fully Gone</div><div class="sub">No 2026 activity at all</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="chart-wrap">
+      <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">Churn Rate by Tenure</h3>
+      <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.75rem;">"Tenure" means how many consecutive summers a camper has attended. First-year campers are the most vulnerable — half don't come back. Surprisingly, 5-year veterans also churn at a high rate (57%), but for a different reason: they're aging out.</p>
+      <table>
+        <thead><tr><th>Years at Camp</th><th>Retained</th><th>Churned</th><th>Churn Rate</th></tr></thead>
+        <tbody>
+          <tr><td>1 year</td><td>172</td><td class="text-red">174</td><td class="text-red">50%</td></tr>
+          <tr><td>2 years</td><td>114</td><td>99</td><td>46%</td></tr>
+          <tr><td>3 years</td><td>84</td><td>58</td><td class="text-green">41%</td></tr>
+          <tr><td>4 years</td><td>58</td><td>45</td><td>44%</td></tr>
+          <tr><td>5 years</td><td>36</td><td class="text-red">48</td><td class="text-red">57%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-wrap">
+      <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">Churn by 2025 Session</h3>
+      <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.75rem;">Does the specific session a camper attended affect whether they return? Session 2 has the highest churn (57%), while Session 5 has the lowest (39%). <strong style="color:var(--orange)">Note:</strong> Session 2 routinely falls on July 4th week, which likely contributes to its higher churn — families may choose holiday plans over camp, or treat it as a one-time "try it" session. Session 2's churn has worsened steadily from 25% (2021→2022) to 37% (2024→2025), a +12 percentage-point climb.</p>
+      <canvas id="sessionChurnChart"></canvas>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Key pattern:</strong> The "stickiest" campers are those in their 3rd year (39% churn). If we can get a first-year camper to come back for a second summer, they're much more likely to become a long-term camper. The first-year experience is the biggest lever we have.
+  </div>
+</section>
+
+<!-- ============ CHURN BY AGE ============ -->
+<section>
+  <h2>Churn by Age</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> The age of each camper during Summer 2025, and whether they've registered for 2026. Younger campers tend to return; older campers are more likely to leave. This is the "aging out" effect — at some point, kids simply outgrow summer camp. This is normal and expected, but understanding the pattern helps us plan.
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="ageChart"></canvas>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="val" style="color:var(--red)">12.1</div>
+      <div class="title">Avg Age — Churned</div>
+      <div class="sub">Campers who didn't return</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--med-green)">11.4</div>
+      <div class="title">Avg Age — Retained</div>
+      <div class="sub">Campers coming back in 2026</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--red)">74%</div>
+      <div class="title">Age 15 Churn</div>
+      <div class="sub">54 of 73 didn't return</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--light-green)">34%</div>
+      <div class="title">Age 10 Churn</div>
+      <div class="sub">Lowest churn rate (sweet spot)</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Why it matters:</strong> Churn roughly doubles between ages 10 and 15. At age 16, every single camper churned — they've graduated from camp. These older campers aren't "lost" in the traditional sense; they've simply aged out. This means a significant portion of our churn is structural and expected. The real opportunity is reducing churn among younger campers (ages 8–12), where we have more influence over the experience.
+  </div>
+</section>
+
+<!-- ============ AGE CHURN TRENDS ============ -->
+<section>
+  <h2>Age Churn Trends (Year over Year)</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> Instead of looking at just one year, this chart tracks how churn rates for each age group have changed over time. We grouped campers into four brackets: youngest (7–9), tweens (10–11), pre-teens (12–13), and teens (14+). Each line shows that group's churn rate across all five transition periods.
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="ageChurnTrendChart"></canvas>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="val" style="color:var(--light-green)">64% → 57%</div>
+      <div class="title">Ages 14+ Improving</div>
+      <div class="sub">Fewer older teens leaving — possibly fewer in pipeline</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--red)">25% → 35%</div>
+      <div class="title">Ages 7–9 Worsening</div>
+      <div class="sub">Youngest campers increasingly not returning</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--orange)">~40%</div>
+      <div class="title">Ages 12–13 Stable</div>
+      <div class="sub">Consistent churn at the pre-teen transition</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--accent)">22% → 29%</div>
+      <div class="title">Ages 10–11 Volatile</div>
+      <div class="sub">Swings year to year, no clear trend</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">Detailed Churn Rates by Age Group & Year</h3>
+    <table>
+      <thead><tr><th>Age Group</th><th>'21→'22</th><th>'22→'23</th><th>'23→'24</th><th>'24→'25</th><th>'25→'26*</th><th>Trend</th></tr></thead>
+      <tbody>
+        <tr><td>Ages 7–9</td><td>24.5%</td><td>31.7%</td><td>26.4%</td><td>31.6%</td><td class="text-red">35.2%</td><td class="text-red">↑ Worsening</td></tr>
+        <tr><td>Ages 10–11</td><td>22.4%</td><td>38.3%</td><td>37.2%</td><td>41.1%</td><td>28.6%</td><td>↕ Volatile</td></tr>
+        <tr><td>Ages 12–13</td><td>37.3%</td><td>40.4%</td><td>44.0%</td><td>44.2%</td><td>39.7%</td><td>→ Stable</td></tr>
+        <tr><td>Ages 14+</td><td>64.2%</td><td>67.9%</td><td>65.5%</td><td>57.3%</td><td class="text-green">56.6%</td><td class="text-green">↓ Improving</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Why it matters:</strong> The improving trend among 14+ campers is good news — but it's offset by worsening churn among the youngest campers (7–9 year olds). This is the group that should have the longest runway at camp, so losing them early means losing the most potential future summers. If we're going to focus retention efforts on one group, the 7–9 age bracket may offer the highest return on investment — keeping a 7-year-old means potentially 8+ more summers vs. 1–2 for a 14-year-old.
+  </div>
+</section>
+
+<!-- ============ GENDER ============ -->
+<section>
+  <h2>Gender Breakdown</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> Camp groups campers into "Girls+" and "Boys+" for cabin assignments. This section looks at whether enrollment and churn differ by gender. The short answer: not dramatically.
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="genderChart"></canvas>
+  </div>
+
+  <div class="two-col">
+    <div class="gender-card girls-bg">
+      <div style="font-weight:700; color:var(--pink); font-size:1.1rem; margin-bottom:0.3rem;">Girls+</div>
+      <div class="pct" style="color:var(--pink)">49%</div>
+      <div style="font-size:0.9rem; color:var(--dark-text); margin:0.25rem 0;">churn rate</div>
+      <div class="detail">242 churned of 492 registered in 2025</div>
+    </div>
+    <div class="gender-card boys-bg">
+      <div style="font-weight:700; color:var(--teal); font-size:1.1rem; margin-bottom:0.3rem;">Boys+</div>
+      <div class="pct" style="color:var(--teal)">46%</div>
+      <div style="font-size:0.9rem; color:var(--dark-text); margin:0.25rem 0;">churn rate</div>
+      <div class="detail">182 churned of 396 registered in 2025</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Why it matters:</strong> Camp consistently leans 53–56% Girls+. The 3-percentage-point gap in churn (49% vs 46%) is modest and doesn't suggest a gender-specific problem. Both groups need the same retention strategies — there's no crisis unique to one gender. The slight Girls+ lean has been consistent for years and isn't a concern.
+  </div>
+</section>
+
+<!-- ============ GENDER CHURN TRENDS ============ -->
+<section>
+  <h2>Gender Churn Trends (Year over Year)</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> Looking at just one year of data, the gender gap in churn looks small (48% vs 45%). But when we plot it over five years, a clear pattern emerges: the lines are crossing. Girls+ churn has improved significantly while Boys+ has gotten worse. This is important context that a single-year snapshot misses.
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="genderChurnTrendChart"></canvas>
+  </div>
+
+  <div class="two-col">
+    <div class="gender-card girls-bg">
+      <div style="font-weight:700; color:var(--pink); font-size:1.1rem; margin-bottom:0.3rem;">Girls+ Trend</div>
+      <div class="pct" style="color:var(--light-green)">42% → 35%</div>
+      <div style="font-size:0.9rem; color:var(--dark-text); margin:0.25rem 0;">churn rate improving</div>
+      <div class="detail">Steady decline in churn — Girls+ retention has gotten meaningfully better over five years</div>
+    </div>
+    <div class="gender-card boys-bg">
+      <div style="font-weight:700; color:var(--teal); font-size:1.1rem; margin-bottom:0.3rem;">Boys+ Trend</div>
+      <div class="pct" style="color:var(--red)">38% → 44%</div>
+      <div style="font-size:0.9rem; color:var(--dark-text); margin:0.25rem 0;">churn rate worsening</div>
+      <div class="detail">Gradual increase in churn — Boys+ now leave at a higher rate than Girls+ (a reversal from 2021)</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">Gender Churn Rate by Year</h3>
+    <table>
+      <thead><tr><th>Gender</th><th>'21→'22</th><th>'22→'23</th><th>'23→'24</th><th>'24→'25</th><th>'25→'26*</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--pink); font-weight:600;">Girls+</td><td>41.9%</td><td>44.5%</td><td>44.0%</td><td>41.3%</td><td class="text-green">35.2%</td><td class="text-green">-6.7 pts</td></tr>
+        <tr><td style="color:var(--teal); font-weight:600;">Boys+</td><td>38.3%</td><td>46.0%</td><td>42.4%</td><td>46.6%</td><td class="text-red">44.1%</td><td class="text-red">+5.8 pts</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Why it matters:</strong> In 2021, Boys+ had better retention than Girls+ (62% vs 58%). By 2025→2026, that's completely flipped — Girls+ now retain at 65% while Boys+ retain at only 56%. This reversal happened gradually and wasn't obvious from any single year's data. It suggests something about the Boys+ camp experience may need attention — whether that's programming, counselor dynamics, cabin culture, or something else. Worth investigating with exit surveys or post-camp interviews targeted at Boys+ families.
+  </div>
+</section>
+
+<!-- ============ AGE × GENDER COMBINED ============ -->
+<section>
+  <h2>Age × Gender: Where the Two Meet</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> Looking at age and gender separately tells us part of the story. But the real insight comes from combining them: <em>which specific age-gender combinations are churning the most?</em> This chart shows churn rates for every age broken out by Girls+ and Boys+ for the 2025→2026 transition.
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="ageGenderChart"></canvas>
+  </div>
+
+  <div class="chart-wrap">
+    <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">Churn Rate by Age × Gender (2025→2026)</h3>
+    <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.75rem;">Each cell shows the churn percentage for that age-gender combination. Red means higher churn; green means lower. The "Gap" column shows how much higher Boys+ churn is than Girls+ (negative = Boys+ churn more). <strong style="color:var(--orange)">Note:</strong> This cross-tabulation is based on available data and represents relative patterns; absolute numbers may vary slightly from top-level totals.</p>
+    <table>
+      <thead><tr><th>Age</th><th>Girls+ Retained</th><th>Girls+ Churned</th><th>Girls+ Churn %</th><th>Boys+ Retained</th><th>Boys+ Churned</th><th>Boys+ Churn %</th><th>Gap (G−B)</th></tr></thead>
+      <tbody>
+        <tr><td>8</td><td>17</td><td>2</td><td class="text-green">10%</td><td>9</td><td>6</td><td class="text-red">40%</td><td class="text-red">-30 pts</td></tr>
+        <tr><td>9</td><td>29</td><td>15</td><td>34%</td><td>23</td><td>20</td><td class="text-red">46%</td><td class="text-red">-12 pts</td></tr>
+        <tr><td>10</td><td>50</td><td>18</td><td class="text-green">26%</td><td>49</td><td>18</td><td class="text-green">27%</td><td>~0 pts</td></tr>
+        <tr><td>11</td><td>72</td><td>25</td><td class="text-green">26%</td><td>39</td><td>23</td><td>37%</td><td class="text-red">-11 pts</td></tr>
+        <tr><td>12</td><td>68</td><td>30</td><td>31%</td><td>44</td><td>26</td><td>37%</td><td>-6 pts</td></tr>
+        <tr><td>13</td><td>29</td><td>27</td><td class="text-red">48%</td><td>29</td><td>29</td><td class="text-red">50%</td><td>-2 pts</td></tr>
+        <tr><td>14</td><td>36</td><td>28</td><td>44%</td><td>25</td><td>15</td><td>38%</td><td class="text-green">+6 pts</td></tr>
+        <tr><td>15</td><td>20</td><td>18</td><td class="text-red">47%</td><td>4</td><td>31</td><td class="text-red">89%</td><td class="text-red">-41 pts</td></tr>
+        <tr><td>16</td><td>0</td><td>11</td><td class="text-red">100%</td><td>0</td><td>8</td><td class="text-red">100%</td><td>0 pts</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="val" style="color:var(--red)">89%</div>
+      <div class="title">Boys+ Age 15</div>
+      <div class="sub">31 of 35 churned — nearly all gone</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--red)">-30 pts</div>
+      <div class="title">Age 8 Gap</div>
+      <div class="sub">Girls+ 10% churn vs Boys+ 40%</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--light-green)">26%</div>
+      <div class="title">Girls+ Age 10–11</div>
+      <div class="sub">Sweet spot — lowest churn for Girls+</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--light-green)">+6 pts</div>
+      <div class="title">Age 14 Exception</div>
+      <div class="sub">Only age where Girls+ churn more than Boys+</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">Age Group × Gender Churn Trends (Year over Year)</h3>
+    <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.75rem;">Is the Boys+ churn problem concentrated in certain ages, or spread evenly? This table shows churn rates for each age group split by gender across all five transitions.</p>
+    <canvas id="ageGenderTrendChart"></canvas>
+  </div>
+
+  <div class="chart-wrap">
+    <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">Detailed YoY: Age Group × Gender Churn Rates</h3>
+    <table>
+      <thead>
+        <tr><th rowspan="2">Age Group</th><th colspan="2">'21→'22</th><th colspan="2">'22→'23</th><th colspan="2">'23→'24</th><th colspan="2">'24→'25</th><th colspan="2">'25→'26*</th></tr>
+        <tr><th>G+</th><th>B+</th><th>G+</th><th>B+</th><th>G+</th><th>B+</th><th>G+</th><th>B+</th><th>G+</th><th>B+</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>7–9</td><td>22%</td><td>27%</td><td>18%</td><td class="text-red">44%</td><td>20%</td><td class="text-red">35%</td><td>31%</td><td>32%</td><td>27%</td><td class="text-red">44%</td></tr>
+        <tr><td>10–11</td><td>24%</td><td>21%</td><td>38%</td><td>39%</td><td>36%</td><td>38%</td><td>37%</td><td class="text-red">46%</td><td class="text-green">26%</td><td>32%</td></tr>
+        <tr><td>12–13</td><td>34%</td><td>41%</td><td>42%</td><td>38%</td><td class="text-red">48%</td><td>39%</td><td>45%</td><td>44%</td><td>37%</td><td>43%</td></tr>
+        <tr><td>14+</td><td class="text-red">69%</td><td>57%</td><td class="text-red">69%</td><td class="text-red">67%</td><td class="text-red">70%</td><td>61%</td><td>52%</td><td class="text-red">62%</td><td>50%</td><td class="text-red">65%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight insight-warn">
+    <strong>Why it matters:</strong> The Boys+ churn problem is <em>not</em> evenly distributed. It's concentrated in two areas: the youngest campers (ages 7–9, where Boys+ churn at 44% vs Girls+ 27%) and the oldest (ages 14+, where Boys+ churn at 65% vs Girls+ 50%). At age 15 specifically, Boys+ churn hit 89% — nearly every boy that age left. The youngest Boys+ are the most actionable group: losing an 8-year-old Boy+ means losing up to 8 potential summers of revenue and community connection. If the board wants to focus retention efforts, <strong>Boys+ ages 7–11</strong> would be the highest-impact target.
+  </div>
+</section>
+
+<!-- ============ SESSION POPULARITY ============ -->
+<section>
+  <h2>Session Popularity</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> Camp runs seven one-week sessions (plus Session 3, which is a two-week option). This chart compares 2025 actuals to 2026 registration and waitlist numbers by session. <strong style="color:var(--orange)">Note:</strong> Session 2 routinely falls on July 4th week. It helps us see which sessions are in highest demand and where capacity is tightest.
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="sessionPopChart"></canvas>
+  </div>
+
+  <div class="chart-wrap">
+    <h3 style="color:var(--dark-green); margin-bottom:0.5rem; font-size:1rem;">2026 Registration by Session</h3>
+    <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.75rem;">Every session has families waiting for a spot. Session 5 has the longest waitlist (42), followed by Session 4 (36). Even Session 1, the least waitlisted, still has 21 families in line. <strong style="color:var(--orange)">Note:</strong> Individual session rows show session-registrations (a camper attending 2 sessions counts twice). The "Total" row shows unique campers/families.</p>
+    <table>
+      <thead><tr><th>Session</th><th>Session-Regs</th><th>Waitlist Entries</th><th>Demand</th></tr></thead>
+      <tbody>
+        <tr><td>Session 1</td><td>110</td><td>21</td><td>131</td></tr>
+        <tr><td>Session 2</td><td>119</td><td>33</td><td>152</td></tr>
+        <tr><td>Session 3 (2-week)</td><td>144</td><td>28</td><td>172</td></tr>
+        <tr><td>Session 4</td><td>134</td><td>36</td><td>170</td></tr>
+        <tr><td>Session 5</td><td>137</td><td class="text-orange">42</td><td>179</td></tr>
+        <tr><td>Session 6</td><td>139</td><td>31</td><td>170</td></tr>
+        <tr><td>Session 7</td><td>140</td><td>29</td><td>169</td></tr>
+        <tr class="highlight-row"><td>Unique Campers</td><td>801</td><td>155</td><td>956</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight">
+    <strong>Why it matters:</strong> Total demand across all sessions is 956 (801 registered + 155 waitlisted). That's comparable to 2024 and 2025 actual enrollment. The issue isn't that families have lost interest in Camp Downer — it's that we're losing more returning campers than we're replacing with new ones. The waitlist proves the demand is there.
+  </div>
+</section>
+
+<!-- ============ ACTIVITY TRENDS ============ -->
+<section>
+  <h2>Activity Trends (2024 → 2025)</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> How many campers signed up for each activity in 2024 vs 2025. A camper can choose multiple activities per session, so these numbers are sign-ups, not unique campers. This tells us what's trending up and what's losing appeal.
+  </div>
+
+  <div class="two-col">
+    <div class="chart-wrap">
+      <h3 style="color:var(--light-green); margin-bottom:0.5rem; font-size:1rem;">Rising Activities</h3>
+      <table>
+        <thead><tr><th>Activity</th><th>2024 → 2025</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td>Campfire Cooking</td><td>50 → 140</td><td class="text-green">+180%</td></tr>
+          <tr><td>Yoga</td><td>11 → 21</td><td class="text-green">+91%</td></tr>
+          <tr><td>Fishing</td><td>89 → 138</td><td class="text-green">+55%</td></tr>
+          <tr><td>Music</td><td>35 → 53</td><td class="text-green">+51%</td></tr>
+          <tr><td>Ropes Adventure</td><td>130 → 174</td><td class="text-green">+34%</td></tr>
+          <tr><td>Mural</td><td>12 → 15</td><td class="text-green">+25%</td></tr>
+          <tr><td>Disc Golf</td><td>55 → 66</td><td class="text-green">+20%</td></tr>
+          <tr><td>Softball</td><td>84 → 100</td><td class="text-green">+19%</td></tr>
+          <tr><td>Boating</td><td>197 → 226</td><td class="text-green">+15%</td></tr>
+          <tr><td>Volleyball</td><td>121 → 135</td><td class="text-green">+12%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-wrap">
+      <h3 style="color:var(--red); margin-bottom:0.5rem; font-size:1rem;">Declining Activities</h3>
+      <table>
+        <thead style="background:var(--red)"><tr><th>Activity</th><th>2024 → 2025</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td>Downer Wild</td><td>94 → 51</td><td class="text-red">-46%</td></tr>
+          <tr><td>Ultimate Frisbee</td><td>53 → 31</td><td class="text-red">-42%</td></tr>
+          <tr><td>Basketball</td><td>129 → 91</td><td class="text-red">-29%</td></tr>
+          <tr><td>Water Aerobics</td><td>117 → 84</td><td class="text-red">-28%</td></tr>
+          <tr><td>Soccer</td><td>113 → 83</td><td class="text-red">-27%</td></tr>
+          <tr><td>Dance</td><td>44 → 35</td><td class="text-red">-20%</td></tr>
+          <tr><td>Journalism</td><td>68 → 55</td><td class="text-red">-19%</td></tr>
+          <tr><td>Archery</td><td>433 → 368</td><td class="text-red">-15%</td></tr>
+          <tr><td>Dodgeball</td><td>146 → 126</td><td class="text-red">-14%</td></tr>
+          <tr><td>Recreation</td><td>208 → 182</td><td class="text-red">-12%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="note">New in 2025: Racket Sports (56 campers) and Jewelry (35 campers) — strong first-year launches.</p>
+
+  <div class="insight">
+    <strong>Why it matters:</strong> Nature-based and creative activities (campfire cooking, fishing, ropes, music) are surging, while traditional competitive sports (basketball, soccer, frisbee) are declining. The declines could reflect shifting camper interests, but they could also signal programming issues worth investigating — coaching quality, equipment, scheduling conflicts with popular activities, or how sports are being presented to campers. Before reallocating resources, it's worth understanding <em>why</em> these activities are losing sign-ups.
+  </div>
+</section>
+
+<!-- ============ CAMPER LOYALTY ============ -->
+<section>
+  <h2>Camper Loyalty</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> Of all 2,307 unique campers who have attended Camp Downer between 2021–2025, how many summers did they attend? "1 year" means they came once and never returned. "5 years" means they came every single summer. This tells us about long-term engagement.
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="loyaltyChart"></canvas>
+  </div>
+
+  <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+    <div class="card">
+      <div class="val" style="color:var(--dark-green)">88</div>
+      <div class="title">5-Year Veterans</div>
+      <div class="sub">Every summer from 2021–2025</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--orange)">51%</div>
+      <div class="title">One-and-Done</div>
+      <div class="sub">1,176 campers attended just one summer</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--red)">10.3% → 6.9%</div>
+      <div class="title">Multi-Session Decline</div>
+      <div class="sub">Fewer campers attending multiple sessions per summer</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Why it matters:</strong> Half of all campers who have ever attended Camp Downer came for just one summer. That's a lot of families we're not converting into repeat visitors. On the positive side, the 88 five-year veterans represent an incredibly loyal core. The opportunity is in the middle — getting one-time campers to return for a second year, where they become significantly more likely to stick around long-term.
+  </div>
+</section>
+
+<!-- ============ WAITLIST ============ -->
+<section>
+  <h2>Waitlist Trends</h2>
+
+  <div class="insight">
+    <strong>What this shows:</strong> Each year, some families want to register but can't get a spot. The waitlist reflects unmet demand — families who want Camp Downer but are turned away due to capacity limits. When we add the waitlist to registered campers, we get "total demand."
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="waitlistChart"></canvas>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="val" style="color:var(--med-green)">801</div>
+      <div class="title">2026 Registered</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--orange)">155</div>
+      <div class="title">2026 Waitlisted</div>
+    </div>
+    <div class="card">
+      <div class="val" style="color:var(--dark-green)">956</div>
+      <div class="title">Total 2026 Demand</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Why it matters:</strong> Total demand has hovered near 1,000 since 2022 (ranging from 956 to 1,089). The waitlist proves that families aren't losing interest in Camp Downer. The enrollment decline isn't a demand problem — it's a retention problem. If we retained even 10% more of our existing campers, we'd be at capacity and growing the waitlist further.
+  </div>
+</section>
+
+<!-- ============ TAKEAWAYS ============ -->
+<section>
+  <h2>Key Takeaways</h2>
+
+  <div class="takeaway-grid">
+    <div class="takeaway">
+      <div class="tk-title">Retention at all-time low</div>
+      <div class="tk-body">52% into 2026 — 424 campers from 2025 haven't registered. 350 show no 2026 activity at all.</div>
+    </div>
+    <div class="takeaway">
+      <div class="tk-title">Aging out drives churn</div>
+      <div class="tk-body">Churned campers avg age 12.1 vs 11.4 retained. At age 15, 74% churn. At 16, 100%. These aren't lost — they've graduated.</div>
+    </div>
+    <div class="takeaway">
+      <div class="tk-title">First-year campers churn most</div>
+      <div class="tk-body">50% of one-year campers don't return. Improving the first-year experience is the single biggest lever for retention.</div>
+    </div>
+    <div class="takeaway">
+      <div class="tk-title">Gender trends diverging</div>
+      <div class="tk-body">Girls+ churn improving (42%→35%), Boys+ worsening (38%→44%). The gap has reversed — Boys+ now churn more.</div>
+    </div>
+    <div class="takeaway">
+      <div class="tk-title">2025 dip was 98% staffing</div>
+      <div class="tk-body">14 fewer beds × 7 sessions = 98 fewer slots. Actual decline: 100 session-regs. The enrollment dip was almost entirely the staffing decision — demand actually grew.</div>
+    </div>
+    <div class="takeaway">
+      <div class="tk-title">Demand exists beyond capacity</div>
+      <div class="tk-body">155 on the 2026 waitlist. Session 5 (42) and Session 4 (36) most waitlisted. Total demand: 956 — higher than any prior year.</div>
+    </div>
+    <div class="takeaway">
+      <div class="tk-title">Activity mix is shifting</div>
+      <div class="tk-body">Campfire Cooking (+180%), Fishing (+55%), Ropes (+34%) surging. Traditional sports declining — worth investigating whether that's camper preference or a programming issue.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<footer>
+  Camp Downer Registration Analysis &bull; Data through February 2026 &bull; 2026 registration ongoing
+</footer>
+
+<!-- ============ CHARTS ============ -->
+<script>
+const COLORS = {
+  darkGreen: '#1B4332', medGreen: '#2D6A4F', lightGreen: '#52B788',
+  accent: '#D4A373', cream: '#FEFAE0', red: '#C1121F', orange: '#E76F51',
+  pink: '#A26769', teal: '#028090', muted: '#5C5C5C'
+};
+
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+
+// Enrollment bar chart
+new Chart(document.getElementById('enrollChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2021', '2022', '2023', '2024', '2025', '2026*'],
+    datasets: [{
+      label: 'Registered Campers',
+      data: [712, 903, 912, 916, 888, 801],
+      backgroundColor: COLORS.medGreen,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' campers' } }
+    },
+    scales: {
+      y: { beginAtZero: true, grid: { display: false }, ticks: { display: false } },
+      x: { grid: { display: false } }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      chart.data.datasets[0].data.forEach((val, i) => {
+        const meta = chart.getDatasetMeta(0).data[i];
+        ctx.fillStyle = COLORS.darkGreen;
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(val, meta.x, meta.y - 6);
+      });
+    }
+  }]
+});
+
+// 2021 Cohort funnel
+new Chart(document.getElementById('cohortChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2021', '2022', '2023', '2024', '2025'],
+    datasets: [{
+      label: 'Remaining from 2021 Cohort',
+      data: [712, 427, 268, 152, 101],
+      backgroundColor: [COLORS.medGreen, COLORS.medGreen, COLORS.accent, COLORS.orange, COLORS.red],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' campers (' + Math.round(ctx.parsed.y/712*100) + '% of original)' } }
+    },
+    scales: {
+      y: { beginAtZero: true, grid: { display: false }, ticks: { display: false } },
+      x: { grid: { display: false } }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      const vals = [712, 427, 268, 152, 101];
+      const pcts = ['100%', '60%', '38%', '21%', '14%'];
+      vals.forEach((val, i) => {
+        const meta = chart.getDatasetMeta(0).data[i];
+        ctx.fillStyle = COLORS.darkGreen;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(val + ' (' + pcts[i] + ')', meta.x, meta.y - 6);
+      });
+    }
+  }]
+});
+
+// New camper pipeline
+new Chart(document.getElementById('newCamperChart'), {
+  type: 'bar',
+  data: {
+    labels: ["'21→'22", "'22→'23", "'23→'24", "'24→'25", "'25→'26"],
+    datasets: [{
+      label: 'New Campers',
+      data: [476, 417, 396, 369, 337],
+      backgroundColor: COLORS.accent,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, grid: { display: false }, ticks: { display: false } },
+      x: { grid: { display: false } }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      chart.data.datasets[0].data.forEach((val, i) => {
+        const meta = chart.getDatasetMeta(0).data[i];
+        ctx.fillStyle = COLORS.darkGreen;
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(val, meta.x, meta.y - 6);
+      });
+    }
+  }]
+});
+
+// Session churn horizontal bar
+new Chart(document.getElementById('sessionChurnChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Session 2', 'Session 6', 'Session 4', 'Session 1', 'Session 3', 'Session 7', 'Session 5'],
+    datasets: [{
+      label: 'Churn Rate',
+      data: [57, 51, 49, 47, 46, 45, 39],
+      backgroundColor: [COLORS.red, COLORS.orange, COLORS.orange, COLORS.muted, COLORS.muted, COLORS.muted, COLORS.lightGreen],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { beginAtZero: true, max: 65, grid: { display: false }, ticks: { callback: v => v + '%' } },
+      y: { grid: { display: false } }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      chart.data.datasets[0].data.forEach((val, i) => {
+        const meta = chart.getDatasetMeta(0).data[i];
+        ctx.fillStyle = COLORS.darkGreen;
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(val + '%', meta.x + 6, meta.y);
+      });
+    }
+  }]
+});
+
+// Age churn TRENDS line chart
+new Chart(document.getElementById('ageChurnTrendChart'), {
+  type: 'line',
+  data: {
+    labels: ["'21→'22", "'22→'23", "'23→'24", "'24→'25", "'25→'26*"],
+    datasets: [
+      { label: 'Ages 7–9', data: [24.5, 31.7, 26.4, 31.6, 35.2], borderColor: COLORS.lightGreen, backgroundColor: COLORS.lightGreen, borderWidth: 2.5, pointRadius: 5, tension: 0.1 },
+      { label: 'Ages 10–11', data: [22.4, 38.3, 37.2, 41.1, 28.6], borderColor: COLORS.accent, backgroundColor: COLORS.accent, borderWidth: 2.5, pointRadius: 5, tension: 0.1 },
+      { label: 'Ages 12–13', data: [37.3, 40.4, 44.0, 44.2, 39.7], borderColor: COLORS.orange, backgroundColor: COLORS.orange, borderWidth: 2.5, pointRadius: 5, tension: 0.1 },
+      { label: 'Ages 14+', data: [64.2, 67.9, 65.5, 57.3, 56.6], borderColor: COLORS.red, backgroundColor: COLORS.red, borderWidth: 2.5, pointRadius: 5, tension: 0.1 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '% churn' } }
+    },
+    scales: {
+      y: { beginAtZero: true, max: 80, ticks: { callback: v => v + '%' }, grid: { color: '#e8e8e8' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Gender churn TRENDS line chart
+new Chart(document.getElementById('genderChurnTrendChart'), {
+  type: 'line',
+  data: {
+    labels: ["'21→'22", "'22→'23", "'23→'24", "'24→'25", "'25→'26*"],
+    datasets: [
+      { label: 'Girls+', data: [41.9, 44.5, 44.0, 41.3, 35.2], borderColor: COLORS.pink, backgroundColor: COLORS.pink, borderWidth: 3, pointRadius: 6, tension: 0.1 },
+      { label: 'Boys+', data: [38.3, 46.0, 42.4, 46.6, 44.1], borderColor: COLORS.teal, backgroundColor: COLORS.teal, borderWidth: 3, pointRadius: 6, tension: 0.1 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '% churn' } }
+    },
+    scales: {
+      y: { min: 25, max: 55, ticks: { callback: v => v + '%' }, grid: { color: '#e8e8e8' } },
+      x: { grid: { display: false } }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      chart.data.datasets.forEach((ds, di) => {
+        chart.getDatasetMeta(di).data.forEach((pt, i) => {
+          ctx.fillStyle = COLORS.darkGreen;
+          ctx.font = 'bold 11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(ds.data[i] + '%', pt.x, pt.y - 10);
+        });
+      });
+    }
+  }]
+});
+
+// Age × Gender grouped bar chart
+new Chart(document.getElementById('ageGenderChart'), {
+  type: 'bar',
+  data: {
+    labels: ['8', '9', '10', '11', '12', '13', '14', '15', '16'],
+    datasets: [
+      { label: 'Girls+ Churn %', data: [10, 34, 26, 26, 31, 48, 44, 47, 100], backgroundColor: COLORS.pink, borderRadius: 3 },
+      { label: 'Boys+ Churn %', data: [40, 46, 27, 37, 37, 50, 38, 89, 100], backgroundColor: COLORS.teal, borderRadius: 3 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+      title: { display: true, text: 'Churn Rate by Age × Gender (2025→2026)', font: { size: 14 }, color: COLORS.darkGreen },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+    },
+    scales: {
+      y: { beginAtZero: true, max: 110, ticks: { callback: v => v + '%' }, grid: { color: '#e8e8e8' } },
+      x: { grid: { display: false }, title: { display: true, text: 'Age at Camp (Summer 2025)' } }
+    }
+  }
+});
+
+// Age Group × Gender YoY trend chart (4 lines: G+ young, G+ old, B+ young, B+ old)
+new Chart(document.getElementById('ageGenderTrendChart'), {
+  type: 'line',
+  data: {
+    labels: ["'21→'22", "'22→'23", "'23→'24", "'24→'25", "'25→'26*"],
+    datasets: [
+      { label: 'Girls+ 7–9', data: [21.7, 18.3, 19.8, 31.2, 27.0], borderColor: COLORS.pink, backgroundColor: COLORS.pink, borderWidth: 2, pointRadius: 5, borderDash: [5,3], tension: 0.1 },
+      { label: 'Boys+ 7–9', data: [26.7, 43.9, 34.9, 31.9, 44.1], borderColor: COLORS.teal, backgroundColor: COLORS.teal, borderWidth: 2, pointRadius: 5, borderDash: [5,3], tension: 0.1 },
+      { label: 'Girls+ 14+', data: [68.9, 68.9, 69.7, 52.3, 50.4], borderColor: COLORS.pink, backgroundColor: COLORS.pink, borderWidth: 3, pointRadius: 6, tension: 0.1 },
+      { label: 'Boys+ 14+', data: [56.6, 66.7, 61.0, 62.0, 65.1], borderColor: COLORS.teal, backgroundColor: COLORS.teal, borderWidth: 3, pointRadius: 6, tension: 0.1 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+      title: { display: true, text: 'Youngest (7–9, dashed) & Oldest (14+, solid) by Gender', font: { size: 13 }, color: COLORS.darkGreen },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '% churn' } }
+    },
+    scales: {
+      y: { beginAtZero: true, max: 80, ticks: { callback: v => v + '%' }, grid: { color: '#e8e8e8' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Age churn stacked bar
+new Chart(document.getElementById('ageChart'), {
+  type: 'bar',
+  data: {
+    labels: ['8', '9', '10', '11', '12', '13', '14', '15', '16'],
+    datasets: [
+      { label: 'Retained', data: [22, 42, 89, 86, 100, 50, 55, 19, 0], backgroundColor: COLORS.medGreen, borderRadius: 2 },
+      { label: 'Churned', data: [12, 44, 45, 72, 67, 63, 48, 54, 19], backgroundColor: COLORS.orange, borderRadius: 2 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: {
+        callbacks: {
+          afterBody: items => {
+            const idx = items[0].dataIndex;
+            const ret = [22,42,89,86,100,50,55,19,0][idx];
+            const ch = [12,44,45,72,67,63,48,54,19][idx];
+            return 'Churn rate: ' + Math.round(ch/(ret+ch)*100) + '%';
+          }
+        }
+      }
+    },
+    scales: {
+      x: { stacked: true, grid: { display: false }, title: { display: true, text: 'Age at Camp (Summer 2025)' } },
+      y: { stacked: true, grid: { display: false }, ticks: { display: false } }
+    }
+  }
+});
+
+// Gender stacked bar
+new Chart(document.getElementById('genderChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2021', '2022', '2023', '2024', '2025'],
+    datasets: [
+      { label: 'Girls+', data: [396, 472, 489, 487, 492], backgroundColor: COLORS.pink, borderRadius: 2 },
+      { label: 'Boys+', data: [316, 431, 423, 429, 396], backgroundColor: COLORS.teal, borderRadius: 2 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: {
+      x: { stacked: true, grid: { display: false } },
+      y: { stacked: true, grid: { display: false }, ticks: { display: false } }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      [0,1].forEach(di => {
+        chart.getDatasetMeta(di).data.forEach((bar, i) => {
+          const val = chart.data.datasets[di].data[i];
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const y = (bar.y + bar.base) / 2;
+          ctx.fillText(val, bar.x, y);
+        });
+      });
+    }
+  }]
+});
+
+// Session popularity grouped bar
+new Chart(document.getElementById('sessionPopChart'), {
+  type: 'bar',
+  data: {
+    labels: ['S1', 'S2', 'S3 (2wk)', 'S4', 'S5', 'S6', 'S7'],
+    datasets: [
+      { label: '2025 Registered', data: [127, 135, 145, 137, 140, 137, 139], backgroundColor: '#95D5B2', borderRadius: 3 },
+      { label: '2026 Registered', data: [110, 119, 144, 134, 137, 139, 140], backgroundColor: COLORS.medGreen, borderRadius: 3 },
+      { label: '2026 Waitlisted', data: [21, 33, 28, 36, 42, 31, 29], backgroundColor: COLORS.orange, borderRadius: 3 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: {
+      y: { beginAtZero: true, grid: { display: false }, ticks: { display: false } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Loyalty donut
+new Chart(document.getElementById('loyaltyChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['1 year (51%)', '2 years (25%)', '3 years (13%)', '4 years (7%)', '5 years (4%)'],
+    datasets: [{
+      data: [1176, 574, 309, 160, 88],
+      backgroundColor: [COLORS.accent, '#E9C46A', COLORS.lightGreen, COLORS.medGreen, COLORS.darkGreen],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }]
+  },
+  options: {
+    responsive: true,
+    cutout: '55%',
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + ' campers' } }
+    }
+  }
+});
+
+// Waitlist stacked bar
+new Chart(document.getElementById('waitlistChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2021', '2022', '2023', '2024', '2025', '2026'],
+    datasets: [
+      { label: 'Registered', data: [712, 903, 912, 916, 888, 801], backgroundColor: COLORS.medGreen, borderRadius: 2 },
+      { label: 'Waitlisted', data: [62, 136, 170, 164, 173, 155], backgroundColor: COLORS.orange, borderRadius: 2 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: {
+      x: { stacked: true, grid: { display: false } },
+      y: { stacked: true, grid: { display: false }, ticks: { display: false } }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      const reg = [712, 903, 912, 916, 888, 801];
+      const wl = [62, 136, 170, 164, 173, 155];
+      reg.forEach((val, i) => {
+        const bar0 = chart.getDatasetMeta(0).data[i];
+        const bar1 = chart.getDatasetMeta(1).data[i];
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(val, bar0.x, (bar0.y + bar0.base) / 2);
+        ctx.fillText(wl[i], bar1.x, (bar1.y + bar1.base) / 2);
+      });
+    }
+  }]
+});
+</script>
+
+</body>
+</html>

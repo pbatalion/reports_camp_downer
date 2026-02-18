@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Board Reports</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            font-weight: 300;
+        }
+
+        .report-section {
+            margin: 30px 0;
+        }
+
+        .report-section h2 {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .report-list {
+            list-style: none;
+        }
+
+        .report-item {
+            margin: 15px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .report-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .report-link {
+            display: block;
+            padding: 20px;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .report-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #667eea;
+        }
+
+        .report-description {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            color: #2874a6;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏕️ Camp Downer</h1>
+            <p class="subtitle">Board Reports & Analysis</p>
+        </header>
+
+        <div class="info-box">
+            <h3>📊 Interactive Financial Statements</h3>
+            <p>These interactive reports include educational tooltips, color-coded analysis, and detailed explanations. Hover over highlighted numbers for more information.</p>
+        </div>
+
+        <div class="report-section">
+            <h2>Registration & Enrollment</h2>
+            <ul class="report-list">
+                <li class="report-item">
+                    <a href="enrollment_analysis/index.html" class="report-link">
+                        <div class="report-title">📈 Registration Analysis 2021–2026</div>
+                        <div class="report-description">Enrollment trends, retention rates, churn analysis by age/gender/tenure, session popularity, and activity trends</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="report-section">
+            <h2>Financial Statements</h2>
+            <ul class="report-list">
+                <li class="report-item">
+                    <a href="public/annual-meeting-2025-interactive/Statement-of-Financial-Position-Interactive.html" class="report-link">
+                        <div class="report-title">Statement of Financial Position</div>
+                        <div class="report-description">Our balance sheet showing assets, liabilities, and equity as of November 13, 2025</div>
+                    </a>
+                </li>
+                <li class="report-item">
+                    <a href="public/annual-meeting-2025-interactive/Statement-of-Activity-Interactive.html" class="report-link">
+                        <div class="report-title">Statement of Activity</div>
+                        <div class="report-description">Income and expenses for January 1 - November 13, 2025</div>
+                    </a>
+                </li>
+                <li class="report-item">
+                    <a href="public/annual-meeting-2025-interactive/Budget-vs-Actuals-Interactive.html" class="report-link">
+                        <div class="report-title">Budget vs. Actuals</div>
+                        <div class="report-description">Comparison of budgeted vs actual performance with variance analysis</div>
+                    </a>
+                </li>
+                <li class="report-item">
+                    <a href="public/annual-meeting-2025-interactive/Fidelity-Investment-Interactive.html" class="report-link">
+                        <div class="report-title">Fidelity Investment Statement</div>
+                        <div class="report-description">Detailed investment holdings and performance (October 31, 2025)</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Camp Downer, Inc. | Annual Meeting 2025</p>
+            <p>For questions, contact the Finance Committee Chair</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Rate Cruncher Calculator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.4em;
+            color: #34495e;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            font-weight: 300;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .info-box strong {
+            color: #2874a6;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1.1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .result-card h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .result-card .big-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .breakdown {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .breakdown-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            padding-top: 15px;
+            border-top: 2px solid #667eea;
+        }
+
+        .label-text {
+            color: #555;
+        }
+
+        .value-text {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .positive {
+            color: #27ae60;
+        }
+
+        .negative {
+            color: #c0392b;
+        }
+
+        .capacity-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted #667eea;
+            color: #667eea;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 320px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 15px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -160px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            line-height: 1.5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-weight: normal;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2c3e50 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .help-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 18px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .tooltip .tooltiptext {
+                width: 250px;
+                margin-left: -125px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">← Back to Reports</a>
+
+        <header>
+            <h1>Rate Cruncher Calculator</h1>
+            <p class="subtitle">Camp Downer Budget Planning Tool</p>
+        </header>
+
+        <div class="info-box">
+            <strong>Purpose:</strong> This calculator helps determine session rates needed to meet budget targets based on realistic capacity assumptions (93% occupancy).
+            <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.9;">
+                💡 <strong>Tip:</strong> Hover over items with <span class="tooltip">dotted underlines<span class="tooltiptext">Like this! Educational tooltips provide context and explain calculations throughout the calculator.</span></span> to learn more.
+            </div>
+        </div>
+
+        <div class="capacity-info">
+            <strong>
+                <span class="tooltip">Capacity Model
+                    <span class="tooltiptext">
+                        <strong>Why 93% capacity?</strong><br><br>
+                        Camp operations rarely run at 100% capacity due to:<br>
+                        • Last-minute cancellations<br>
+                        • Weather impacts<br>
+                        • Family schedule changes<br>
+                        • Economic factors<br><br>
+                        Using 93% provides a conservative, realistic projection based on historical Camp Downer enrollment patterns.
+                    </span>
+                </span>:
+            </strong><br>
+            • <span class="tooltip">One-Week Sessions<span class="tooltiptext">Camp offers 6 one-week sessions throughout the summer. Each session can accommodate 140 campers, for a total capacity of 840 campers.</span></span>: 6 sessions × 140 campers = 840 capacity<br>
+            • <span class="tooltip">Two-Week Sessions<span class="tooltiptext">Camp offers 1 two-week session with a capacity of 146 campers. This extended session provides a deeper camp experience.</span></span>: 1 session × 146 campers = 146 capacity<br>
+            • <span class="tooltip">Operating at 93% capacity<span class="tooltiptext">At 93% enrollment, we expect 781 one-week campers and 136 two-week campers. This realistic projection helps create a balanced budget without over-optimistic revenue assumptions.</span></span> = 781 one-week + 136 two-week campers
+        </div>
+
+        <h2>
+            <span class="tooltip">Current Rates (2025 Baseline)
+                <span class="tooltiptext">
+                    <strong>Baseline Rates</strong><br><br>
+                    These are the current session rates for 2025. The calculator uses these as the starting point to calculate new rates based on your proposed percentage increases.<br><br>
+                    At current rates with 93% capacity, projected registration income is $594,288.60.
+                </span>
+            </span>
+        </h2>
+        <div class="input-section">
+            <div class="row">
+                <div class="input-group">
+                    <label>
+                        Current One-Week Rate ($)
+                        <span class="tooltip"><span class="help-icon">?</span>
+                            <span class="tooltiptext">
+                                <strong>One-Week Session Rate</strong><br><br>
+                                This is the base rate families pay for a one-week camp session. You can adjust this if needed, or leave it at the 2025 default of $540.
+                            </span>
+                        </span>
+                    </label>
+                    <input type="number" id="currentOneWeek" value="540" step="5">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Current Two-Week Rate ($)
+                        <span class="tooltip"><span class="help-icon">?</span>
+                            <span class="tooltiptext">
+                                <strong>Two-Week Session Rate</strong><br><br>
+                                This is the base rate for the extended two-week session. The 2025 rate is $1,270, which represents better value per week compared to single-week sessions.
+                            </span>
+                        </span>
+                    </label>
+                    <input type="number" id="currentTwoWeek" value="1270" step="5">
+                </div>
+            </div>
+        </div>
+
+        <h2>
+            <span class="tooltip">Proposed Rate Increase
+                <span class="tooltiptext">
+                    <strong>Rate Increase Strategy</strong><br><br>
+                    Enter the percentage increase you're considering for each session type. You can set the same increase for both, or use different percentages to maintain pricing flexibility.<br><br>
+                    <strong>Example:</strong> A 5% increase on the $540 one-week rate would result in a new rate of $567.
+                </span>
+            </span>
+        </h2>
+        <div class="input-section">
+            <div class="row">
+                <div class="input-group">
+                    <label>
+                        One-Week Rate Increase (%)
+                        <span class="tooltip"><span class="help-icon">?</span>
+                            <span class="tooltiptext">
+                                <strong>One-Week Rate Increase</strong><br><br>
+                                Enter the percentage increase from the current rate. For example:<br>
+                                • 3% = $540 → $556.20<br>
+                                • 5% = $540 → $567.00<br>
+                                • 8% = $540 → $583.20<br><br>
+                                Consider family affordability and competitive pricing when setting increases.
+                            </span>
+                        </span>
+                    </label>
+                    <input type="number" id="increaseOneWeek" value="0" step="0.5" min="0" max="50">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Two-Week Rate Increase (%)
+                        <span class="tooltip"><span class="help-icon">?</span>
+                            <span class="tooltiptext">
+                                <strong>Two-Week Rate Increase</strong><br><br>
+                                Enter the percentage increase for two-week sessions. This can be different from the one-week increase.<br><br>
+                                <strong>Strategy:</strong> Some camps keep two-week increases lower to encourage longer stays, while others maintain consistency across all sessions.
+                            </span>
+                        </span>
+                    </label>
+                    <input type="number" id="increaseTwoWeek" value="0" step="0.5" min="0" max="50">
+                </div>
+            </div>
+        </div>
+
+        <h2>
+            <span class="tooltip">Budget Target (Optional)
+                <span class="tooltiptext">
+                    <strong>Budget Target Analysis</strong><br><br>
+                    Enter your total expense budget to see if projected registration income covers expenses. The calculator will show surplus or deficit.<br><br>
+                    <strong>Tip:</strong> This helps answer "What rate increase do we need to balance the budget?"
+                </span>
+            </span>
+        </h2>
+        <div class="input-section">
+            <div class="input-group">
+                <label>
+                    Total Expense Budget Target ($)
+                    <span class="tooltip"><span class="help-icon">?</span>
+                        <span class="tooltiptext">
+                            <strong>How to Use Budget Target</strong><br><br>
+                            Enter the total operating expenses from your budget (e.g., $640,000). The calculator will show:<br>
+                            • Whether projected income meets the budget<br>
+                            • Surplus or deficit amount<br>
+                            • Budget coverage percentage<br><br>
+                            <strong>Note:</strong> Registration income should typically cover 90-95% of total expenses, with donations, merchandise, and other revenue covering the rest.
+                        </span>
+                    </span>
+                </label>
+                <input type="number" id="budgetTarget" placeholder="e.g., 640000" step="1000">
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">Leave blank if you just want to see projected income</small>
+            </div>
+        </div>
+
+        <div class="input-section" style="padding: 15px 25px;">
+            <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                <input type="checkbox" id="roundRates" checked style="width: auto; margin-right: 10px; cursor: pointer;">
+                <span>
+                    <span class="tooltip">Round rates to nearest $5
+                        <span class="tooltiptext">
+                            <strong>User-Friendly Pricing</strong><br><br>
+                            When enabled, calculated rates are rounded to the nearest $5 (e.g., $567.30 becomes $565).<br><br>
+                            This makes rates cleaner and easier to communicate to families. Revenue calculations automatically adjust to use the rounded rates.
+                        </span>
+                    </span>
+                    <span style="color: #7f8c8d; font-size: 0.85em; font-weight: normal; margin-left: 10px;">(Recommended for cleaner pricing)</span>
+                </span>
+            </label>
+        </div>
+
+        <button onclick="calculate()">Calculate Projected Income</button>
+
+        <div id="results" class="results">
+            <h2>
+                <span class="tooltip">Results
+                    <span class="tooltiptext">
+                        <strong>Understanding Your Results</strong><br><br>
+                        These calculations show projected registration income based on your rate increases and the 93% capacity model.<br><br>
+                        All figures assume realistic enrollment patterns and provide a conservative budget projection.
+                    </span>
+                </span>
+            </h2>
+
+            <div class="result-card">
+                <h3>
+                    <span class="tooltip" style="border-bottom-color: white; color: white;">
+                        Total Projected Registration Income
+                        <span class="tooltiptext">
+                            <strong>Registration Income</strong><br><br>
+                            This is the total revenue expected from camper registrations at 93% capacity. It represents the primary income source for camp operations.<br><br>
+                            This figure does NOT include donations, merchandise, milk refunds, or other income sources.
+                        </span>
+                    </span>
+                </h3>
+                <div class="big-number" id="totalIncome">$0</div>
+                <div id="budgetStatus"></div>
+            </div>
+
+            <div class="breakdown">
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">New Session Rates</h3>
+                <div class="breakdown-row">
+                    <span class="label-text">One-Week Session</span>
+                    <span class="value-text" id="newOneWeek">$0</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label-text">Two-Week Session</span>
+                    <span class="value-text" id="newTwoWeek">$0</span>
+                </div>
+            </div>
+
+            <div class="breakdown">
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Revenue Breakdown (at 93% capacity)</h3>
+                <div class="breakdown-row">
+                    <span class="label-text">One-Week Revenue (781 campers)</span>
+                    <span class="value-text" id="oneWeekRevenue">$0</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label-text">Two-Week Revenue (136 campers)</span>
+                    <span class="value-text" id="twoWeekRevenue">$0</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label-text">TOTAL PROJECTED INCOME</span>
+                    <span class="value-text" id="totalRevenue">$0</span>
+                </div>
+            </div>
+
+            <div class="breakdown">
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">
+                    <span class="tooltip">Year-over-Year Change
+                        <span class="tooltiptext">
+                            <strong>Income Comparison</strong><br><br>
+                            This section compares your proposed rates to 2025 baseline rates, showing how much additional revenue the rate increase would generate.<br><br>
+                            Use this to evaluate the financial impact of your pricing decisions.
+                        </span>
+                    </span>
+                </h3>
+                <div class="breakdown-row">
+                    <span class="label-text">
+                        <span class="tooltip">Current Income (2025)
+                            <span class="tooltiptext">Baseline registration income at 2025 rates ($540/$1,270) with 93% capacity enrollment.</span>
+                        </span>
+                    </span>
+                    <span class="value-text" id="currentIncome">$594,288.60</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label-text">
+                        <span class="tooltip">Projected Income Change
+                            <span class="tooltiptext">The dollar amount difference between projected income and current baseline. Positive numbers indicate increased revenue.</span>
+                        </span>
+                    </span>
+                    <span class="value-text" id="incomeChange">$0</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label-text">
+                        <span class="tooltip">Percentage Change
+                            <span class="tooltiptext">The percentage increase in registration income. A 3% rate increase typically yields approximately 3% more revenue (assuming enrollment stays constant).</span>
+                        </span>
+                    </span>
+                    <span class="value-text" id="percentChange">0%</span>
+                </div>
+            </div>
+
+            <div id="budgetComparison" class="breakdown" style="display: none;">
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Budget Comparison</h3>
+                <div class="breakdown-row">
+                    <span class="label-text">Target Budget</span>
+                    <span class="value-text" id="targetBudget">$0</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label-text">Projected Income</span>
+                    <span class="value-text" id="projectedIncome">$0</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label-text">Surplus / (Deficit)</span>
+                    <span class="value-text" id="surplusDeficit">$0</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label-text">Budget Coverage</span>
+                    <span class="value-text" id="budgetCoverage">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Camp Downer, Inc. | Budget Planning Tools</p>
+            <p>For questions, contact the Finance Committee Chair</p>
+        </footer>
+    </div>
+
+    <script>
+        // Constants
+        const ONE_WEEK_CAMPERS = 781;  // 93% of 840
+        const TWO_WEEK_CAMPERS = 136;  // 93% of 146
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function formatPercent(value) {
+            return (value > 0 ? '+' : '') + value.toFixed(2) + '%';
+        }
+
+        function roundToNearestFive(value) {
+            return Math.round(value / 5) * 5;
+        }
+
+        function calculate() {
+            // Get inputs
+            const currentOneWeek = parseFloat(document.getElementById('currentOneWeek').value);
+            const currentTwoWeek = parseFloat(document.getElementById('currentTwoWeek').value);
+            const increaseOneWeek = parseFloat(document.getElementById('increaseOneWeek').value);
+            const increaseTwoWeek = parseFloat(document.getElementById('increaseTwoWeek').value);
+            const budgetTarget = parseFloat(document.getElementById('budgetTarget').value);
+            const shouldRound = document.getElementById('roundRates').checked;
+
+            // Calculate new rates (exact)
+            const newOneWeekExact = currentOneWeek * (1 + increaseOneWeek / 100);
+            const newTwoWeekExact = currentTwoWeek * (1 + increaseTwoWeek / 100);
+
+            // Apply rounding if enabled
+            const newOneWeek = shouldRound ? roundToNearestFive(newOneWeekExact) : newOneWeekExact;
+            const newTwoWeek = shouldRound ? roundToNearestFive(newTwoWeekExact) : newTwoWeekExact;
+
+            // Calculate revenue using final rates
+            const oneWeekRevenue = ONE_WEEK_CAMPERS * newOneWeek;
+            const twoWeekRevenue = TWO_WEEK_CAMPERS * newTwoWeek;
+            const totalIncome = oneWeekRevenue + twoWeekRevenue;
+
+            // Calculate current income for comparison
+            const currentIncome = (ONE_WEEK_CAMPERS * currentOneWeek) + (TWO_WEEK_CAMPERS * currentTwoWeek);
+            const incomeChange = totalIncome - currentIncome;
+            const percentChange = (incomeChange / currentIncome) * 100;
+
+            // Display results with rounding indicator
+            let oneWeekDisplay = formatCurrency(newOneWeek);
+            let twoWeekDisplay = formatCurrency(newTwoWeek);
+
+            if (shouldRound && (newOneWeek !== newOneWeekExact || newTwoWeek !== newTwoWeekExact)) {
+                if (newOneWeek !== newOneWeekExact) {
+                    oneWeekDisplay += ' <span style="font-size: 0.8em; color: #7f8c8d;">(rounded from ' + formatCurrency(newOneWeekExact) + ')</span>';
+                }
+                if (newTwoWeek !== newTwoWeekExact) {
+                    twoWeekDisplay += ' <span style="font-size: 0.8em; color: #7f8c8d;">(rounded from ' + formatCurrency(newTwoWeekExact) + ')</span>';
+                }
+            }
+
+            document.getElementById('newOneWeek').innerHTML = oneWeekDisplay;
+            document.getElementById('newTwoWeek').innerHTML = twoWeekDisplay;
+            document.getElementById('oneWeekRevenue').textContent = formatCurrency(oneWeekRevenue);
+            document.getElementById('twoWeekRevenue').textContent = formatCurrency(twoWeekRevenue);
+            document.getElementById('totalRevenue').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('currentIncome').textContent = formatCurrency(currentIncome);
+
+            // Income change styling
+            const changeElement = document.getElementById('incomeChange');
+            changeElement.textContent = formatCurrency(incomeChange);
+            changeElement.className = 'value-text ' + (incomeChange >= 0 ? 'positive' : 'negative');
+
+            const percentElement = document.getElementById('percentChange');
+            percentElement.textContent = formatPercent(percentChange);
+            percentElement.className = 'value-text ' + (percentChange >= 0 ? 'positive' : 'negative');
+
+            // Budget comparison
+            if (budgetTarget && !isNaN(budgetTarget)) {
+                const surplus = totalIncome - budgetTarget;
+                const coverage = (totalIncome / budgetTarget) * 100;
+
+                document.getElementById('budgetComparison').style.display = 'block';
+                document.getElementById('targetBudget').textContent = formatCurrency(budgetTarget);
+                document.getElementById('projectedIncome').textContent = formatCurrency(totalIncome);
+
+                const surplusElement = document.getElementById('surplusDeficit');
+                surplusElement.textContent = formatCurrency(surplus);
+                surplusElement.className = 'value-text ' + (surplus >= 0 ? 'positive' : 'negative');
+
+                const coverageElement = document.getElementById('budgetCoverage');
+                coverageElement.textContent = coverage.toFixed(2) + '%';
+                coverageElement.className = 'value-text ' + (coverage >= 100 ? 'positive' : 'negative');
+
+                // Budget status message
+                const statusElement = document.getElementById('budgetStatus');
+                if (surplus >= 0) {
+                    statusElement.innerHTML = '<div style="margin-top: 10px; opacity: 0.9;">✓ Meets budget target with ' + formatCurrency(surplus) + ' surplus</div>';
+                } else {
+                    statusElement.innerHTML = '<div style="margin-top: 10px; opacity: 0.9;">⚠ Falls short of budget by ' + formatCurrency(Math.abs(surplus)) + '</div>';
+                }
+            } else {
+                document.getElementById('budgetComparison').style.display = 'none';
+                document.getElementById('budgetStatus').innerHTML = '';
+            }
+
+            // Show results
+            document.getElementById('results').classList.add('show');
+
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Allow Enter key to calculate
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculate();
+            }
+        });
+
+        // Recalculate when rounding checkbox changes
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('roundRates').addEventListener('change', calculate);
+        });
+
+        // Calculate on page load with default values
+        window.addEventListener('load', function() {
+            calculate();
+        });
+    </script>
+</body>
+</html>
