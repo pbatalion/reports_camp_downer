@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Budget vs. Actuals (Interactive)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #34495e;
+            margin-bottom: 3px;
+        }
+
+        .date {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .category-header {
+            background: #ecf0f1 !important;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .subcategory {
+            padding-left: 30px !important;
+        }
+
+        .total-row {
+            font-weight: 600;
+            background: #f8f9fa;
+            border-top: 2px solid #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .grand-total {
+            font-weight: 700;
+            background: #d5dbdb;
+            font-size: 14px;
+        }
+
+        /* Color coding */
+        .excellent { color: #27ae60; font-weight: 600; }
+        .good { color: #16a085; }
+        .warning { color: #f39c12; font-weight: 600; }
+        .critical { color: #c0392b; font-weight: 600; }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #999;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.5;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2c3e50 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .info-box {
+            background: #ebf5fb;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            color: #2874a6;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .alert-box {
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .alert-box h3 {
+            color: #b9770e;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .success-box {
+            background: #eafaf1;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box h3 {
+            color: #1e8449;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+            .tooltip .tooltiptext { display: none; }
+        }
+
+        .legend {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .badge-excellent { background: #d5f4e6; color: #27ae60; }
+        .badge-warning { background: #fef5e7; color: #f39c12; }
+        .badge-critical { background: #fadbd8; color: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Camp Downer, Inc.</h1>
+            <h2>Budget vs. Actuals: Budget_FY25_P&L - FY25 P&L</h2>
+            <p class="date">January 1 - November 13, 2025 | Cash Basis</p>
+        </header>
+
+        <div class="info-box" style="background: #e8f4f8; border-left-color: #3498db;">
+            <h3>📄 Source Document</h3>
+            <p style="margin-bottom: 5px;">This interactive version is based on the original PDF:</p>
+            <p><a href="https://drive.google.com/file/d/1X971Fn01LayL8PcstZUVEgIqbBKj1_pc/view?usp=sharing"
+                  style="color: #2874a6; font-weight: 600; text-decoration: none; border-bottom: 1px solid #2874a6;"
+                  target="_blank">
+                📎 View Original PDF in Google Drive →
+            </a></p>
+        </div>
+
+        <div class="legend">
+            <h4>How to Read This Report</h4>
+            <div class="legend-item"><span class="excellent">● Green</span> = On target or exceeding expectations</div>
+            <div class="legend-item"><span class="warning">● Orange</span> = Needs attention or discussion</div>
+            <div class="legend-item"><span class="critical">● Red</span> = Critical issue requiring action</div>
+            <div style="margin-top: 10px; font-size: 12px; color: #7f8c8d;">
+                💡 Hover over highlighted numbers for detailed explanations
+            </div>
+        </div>
+
+        <div class="success-box">
+            <h3>📊 Executive Summary</h3>
+            <p><strong>Net Income:</strong> $120,421 profit vs. budgeted LOSS of ($45,751)</p>
+            <p><strong>Performance:</strong> $166,173 better than budget (Outstanding!)</p>
+            <p><strong>Key Driver:</strong> Registration revenue 19.6% above budget</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">ACCOUNT</th>
+                    <th class="number" style="width: 15%;">ACTUAL</th>
+                    <th class="number" style="width: 15%;">BUDGET</th>
+                    <th class="number" style="width: 10%;">OVER BUDGET</th>
+                    <th class="number" style="width: 10%;">% OF BUDGET</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- INCOME -->
+                <tr class="category-header">
+                    <td colspan="5">INCOME</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Donations</td>
+                    <td class="number">4,352</td>
+                    <td class="number">—</td>
+                    <td class="number">4,352</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Donations - Restricted Scholarship</td>
+                    <td class="number">1,100</td>
+                    <td class="number">—</td>
+                    <td class="number">1,100</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip excellent">Registrations (Net)
+                            <span class="tooltiptext">
+                                <strong>EXCELLENT PERFORMANCE!</strong><br>
+                                We had 19.6% MORE campers than budgeted!<br><br>
+                                Breakdown:<br>
+                                • Gross: $749,620<br>
+                                • Refunds: ($19,455)<br>
+                                • Scholarships: ($19,570)<br>
+                                • Net: $710,595<br><br>
+                                This represents 98.6% of all our income.
+                            </span>
+                        </span>
+                        <span class="badge badge-excellent">EXCELLENT</span>
+                    </td>
+                    <td class="number excellent">710,595</td>
+                    <td class="number">594,289</td>
+                    <td class="number excellent">116,306</td>
+                    <td class="number excellent">119.6%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Merchandise</td>
+                    <td class="number">2,702</td>
+                    <td class="number">—</td>
+                    <td class="number">2,702</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Milk Refund</td>
+                    <td class="number">972</td>
+                    <td class="number">—</td>
+                    <td class="number">972</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Other Income</td>
+                    <td class="number">397</td>
+                    <td class="number">—</td>
+                    <td class="number">397</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Interest Earned</td>
+                    <td class="number">190</td>
+                    <td class="number">—</td>
+                    <td class="number">190</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>Total Income</strong></td>
+                    <td class="number"><strong>720,308</strong></td>
+                    <td class="number"><strong>594,289</strong></td>
+                    <td class="number excellent"><strong>126,019</strong></td>
+                    <td class="number excellent"><strong>121.2%</strong></td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>GROSS PROFIT</strong></td>
+                    <td class="number"><strong>720,308</strong></td>
+                    <td class="number"><strong>594,289</strong></td>
+                    <td class="number excellent"><strong>126,019</strong></td>
+                    <td class="number excellent"><strong>121.2%</strong></td>
+                </tr>
+
+                <!-- EXPENSES -->
+                <tr class="category-header">
+                    <td colspan="5">EXPENSES</td>
+                </tr>
+
+                <tr class="category-header">
+                    <td colspan="5" style="padding-left: 15px;">5-Operations</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Staff Salaries</td>
+                    <td class="number">224,878</td>
+                    <td class="number">237,600</td>
+                    <td class="number good">(12,722)</td>
+                    <td class="number good">94.6%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Dining Service</td>
+                    <td class="number">124,336</td>
+                    <td class="number">116,000</td>
+                    <td class="number">8,336</td>
+                    <td class="number">107.2%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip warning">Training
+                            <span class="tooltiptext">
+                                <strong>Note for possible discussion</strong><br>
+                                Training costs doubled the budget.<br><br>
+                                Budgeted: $6,500<br>
+                                Actual: $12,971 (199.6%)<br><br>
+                                Discussed in Director's report.
+                            </span>
+                        </span>
+                        <span class="badge badge-warning">NOTE</span>
+                    </td>
+                    <td class="number warning">12,971</td>
+                    <td class="number">6,500</td>
+                    <td class="number warning">6,471</td>
+                    <td class="number warning">199.6%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Camper Store</td>
+                    <td class="number">10,138</td>
+                    <td class="number">10,000</td>
+                    <td class="number">138</td>
+                    <td class="number">101.4%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Other Operations (Combined)</td>
+                    <td class="number">34,996</td>
+                    <td class="number">35,850</td>
+                    <td class="number good">(854)</td>
+                    <td class="number good">97.6%</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>Total 5-Operations</strong></td>
+                    <td class="number"><strong>407,319</strong></td>
+                    <td class="number"><strong>405,950</strong></td>
+                    <td class="number"><strong>1,369</strong></td>
+                    <td class="number"><strong>100.3%</strong></td>
+                </tr>
+
+                <tr class="category-header">
+                    <td colspan="5" style="padding-left: 15px;">6-Finance</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Insurance</td>
+                    <td class="number">26,865</td>
+                    <td class="number">35,000</td>
+                    <td class="number good">(8,135)</td>
+                    <td class="number good">76.8%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Payroll Taxes</td>
+                    <td class="number">19,151</td>
+                    <td class="number">19,500</td>
+                    <td class="number good">(349)</td>
+                    <td class="number good">98.2%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Payment Processing Fees</td>
+                    <td class="number">17,615</td>
+                    <td class="number">19,000</td>
+                    <td class="number good">(1,385)</td>
+                    <td class="number good">92.7%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Advertising & Promotional</td>
+                    <td class="number">9,244</td>
+                    <td class="number">8,000</td>
+                    <td class="number">1,244</td>
+                    <td class="number">115.6%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip">Professional Services
+                            <span class="tooltiptext">
+                                Only 48% of budget spent ($6,266 of $13,000).<br><br>
+                                Questions:<br>
+                                • Was planned work completed?<br>
+                                • Should we reallocate these funds?<br>
+                                • Were estimates too high?
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">6,266</td>
+                    <td class="number">13,000</td>
+                    <td class="number good">(6,734)</td>
+                    <td class="number">48.2%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Other Finance (Combined)</td>
+                    <td class="number">29,663</td>
+                    <td class="number">32,590</td>
+                    <td class="number good">(2,927)</td>
+                    <td class="number good">91.0%</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>Total 6-Finance</strong></td>
+                    <td class="number"><strong>108,804</strong></td>
+                    <td class="number"><strong>127,090</strong></td>
+                    <td class="number good"><strong>(18,286)</strong></td>
+                    <td class="number good"><strong>85.6%</strong></td>
+                </tr>
+
+                <tr class="category-header">
+                    <td colspan="5" style="padding-left: 15px;">7-Building & Grounds</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Facility Contractor Services</td>
+                    <td class="number">20,301</td>
+                    <td class="number">20,000</td>
+                    <td class="number">301</td>
+                    <td class="number">101.5%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Maintenance Material & Supplies</td>
+                    <td class="number">8,672</td>
+                    <td class="number">8,500</td>
+                    <td class="number">172</td>
+                    <td class="number">102.0%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip warning">Pool Maintenance
+                            <span class="tooltiptext">
+                                <strong>Note for possible discussion</strong><br>
+                                Budgeted: $4,500<br>
+                                Actual: $7,976 (177.2%)<br><br>
+                                77% over budget. Added costs due to lightning strike and learning new system.
+                            </span>
+                        </span>
+                        <span class="badge badge-warning">NOTE</span>
+                    </td>
+                    <td class="number warning">7,976</td>
+                    <td class="number">4,500</td>
+                    <td class="number warning">3,476</td>
+                    <td class="number warning">177.2%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Pond Maintenance</td>
+                    <td class="number">6,530</td>
+                    <td class="number">6,500</td>
+                    <td class="number">30</td>
+                    <td class="number">100.5%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Other Equipment</td>
+                    <td class="number">5,434</td>
+                    <td class="number">5,000</td>
+                    <td class="number">434</td>
+                    <td class="number">108.7%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip warning">Off-Season Projects
+                            <span class="tooltiptext">
+                                <strong>Note for possible discussion</strong><br>
+                                Budgeted: $20,000<br>
+                                Actual: $4,766 (23.8%)<br><br>
+                                Only 24% spent. What's the plan?
+                            </span>
+                        </span>
+                        <span class="badge badge-warning">NOTE</span>
+                    </td>
+                    <td class="number warning">4,766</td>
+                    <td class="number">20,000</td>
+                    <td class="number warning">(15,234)</td>
+                    <td class="number warning">23.8%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip warning">Capital Reserve
+                            <span class="tooltiptext">
+                                <strong>Note for possible discussion</strong><br>
+                                Budgeted: $30,000<br>
+                                Actual: $0 (0%)<br><br>
+                                Effectively not funded due to running a deficit.<br><br>
+                                Capital reserves fund future major expenses like:<br>
+                                • Roof replacement<br>
+                                • HVAC systems<br>
+                                • Building renovations
+                            </span>
+                        </span>
+                        <span class="badge badge-warning">NOTE</span>
+                    </td>
+                    <td class="number warning">0</td>
+                    <td class="number">30,000</td>
+                    <td class="number warning">(30,000)</td>
+                    <td class="number warning">0.0%</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Other Building & Grounds (Combined)</td>
+                    <td class="number">7,910</td>
+                    <td class="number">12,500</td>
+                    <td class="number good">(4,590)</td>
+                    <td class="number good">63.3%</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>Total 7-Building & Grounds</strong></td>
+                    <td class="number"><strong>61,589</strong></td>
+                    <td class="number"><strong>107,000</strong></td>
+                    <td class="number good"><strong>(45,411)</strong></td>
+                    <td class="number"><strong>57.6%</strong></td>
+                </tr>
+
+                <tr class="grand-total">
+                    <td><strong>TOTAL EXPENSES</strong></td>
+                    <td class="number"><strong>577,711</strong></td>
+                    <td class="number"><strong>640,040</strong></td>
+                    <td class="number good"><strong>(62,329)</strong></td>
+                    <td class="number good"><strong>90.3%</strong></td>
+                </tr>
+
+                <tr class="grand-total" style="background: #d5f4e6;">
+                    <td><strong>
+                        <span class="tooltip excellent">NET OPERATING INCOME
+                            <span class="tooltiptext">
+                                <strong>🎯 OUTSTANDING PERFORMANCE!</strong><br><br>
+                                Budgeted: LOSS of ($45,751)<br>
+                                Actual: PROFIT of $142,597<br>
+                                Better than budget: $188,348!<br><br>
+                                Operating Margin: 19.8%<br>
+                                (For every $1 earned, we kept $0.20)<br><br>
+                                This is excellent for a nonprofit!
+                            </span>
+                        </span>
+                    </strong></td>
+                    <td class="number excellent"><strong>142,597</strong></td>
+                    <td class="number"><strong>(45,751)</strong></td>
+                    <td class="number excellent"><strong>188,348</strong></td>
+                    <td class="number excellent"><strong>-311.7%</strong></td>
+                </tr>
+
+                <!-- OTHER INCOME/EXPENSES -->
+                <tr class="category-header">
+                    <td colspan="5">OTHER INCOME</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip">Dividend Income
+                            <span class="tooltiptext">
+                                Cash payments from our investment account.<br>
+                                These are dividends from stocks/ETFs we own.
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">11,271</td>
+                    <td class="number">—</td>
+                    <td class="number">11,271</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip">Unrealized Gain/Loss
+                            <span class="tooltiptext">
+                                Our investments increased in value by $20,223.<br><br>
+                                "Unrealized" = We haven't sold them yet.<br>
+                                Think of it like your house value going up - you're wealthier on paper but don't have cash until you sell.
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">20,223</td>
+                    <td class="number">—</td>
+                    <td class="number">20,223</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">Other (Interest, Misc)</td>
+                    <td class="number">48</td>
+                    <td class="number">—</td>
+                    <td class="number">48</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>Total Other Income</strong></td>
+                    <td class="number"><strong>31,542</strong></td>
+                    <td class="number"><strong>0</strong></td>
+                    <td class="number"><strong>31,542</strong></td>
+                    <td class="number"><strong>—</strong></td>
+                </tr>
+
+                <tr class="category-header">
+                    <td colspan="5">OTHER EXPENSES</td>
+                </tr>
+
+                <tr>
+                    <td class="subcategory">
+                        <span class="tooltip">Depreciation
+                            <span class="tooltiptext">
+                                <strong>This is a NON-CASH expense!</strong><br><br>
+                                We bought buildings/equipment years ago.<br>
+                                Instead of expensing it all at once, we spread the cost over many years.<br><br>
+                                Example: $500,000 building with 25-year life<br>
+                                = $20,000/year depreciation<br><br>
+                                No money actually leaves our account for this!
+                            </span>
+                        </span>
+                    </td>
+                    <td class="number">53,717</td>
+                    <td class="number">—</td>
+                    <td class="number">53,717</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>Total Other Expenses</strong></td>
+                    <td class="number"><strong>53,717</strong></td>
+                    <td class="number"><strong>0</strong></td>
+                    <td class="number"><strong>53,717</strong></td>
+                    <td class="number"><strong>—</strong></td>
+                </tr>
+
+                <tr class="grand-total" style="background: #d5f4e6; font-size: 16px;">
+                    <td><strong>
+                        <span class="tooltip excellent">NET INCOME (Bottom Line)
+                            <span class="tooltiptext">
+                                <strong>🎉 FINAL RESULT</strong><br><br>
+                                After EVERYTHING:<br>
+                                • Operations: +$142,597<br>
+                                • Investments: +$31,542<br>
+                                • Depreciation: -$53,717<br>
+                                = Net Income: $120,421<br><br>
+                                We budgeted a LOSS of $45,751.<br>
+                                We made a PROFIT of $120,421!<br><br>
+                                We're $166,173 better than budget!
+                            </span>
+                        </span>
+                    </strong></td>
+                    <td class="number excellent"><strong>120,421</strong></td>
+                    <td class="number"><strong>(45,751)</strong></td>
+                    <td class="number excellent"><strong>166,173</strong></td>
+                    <td class="number excellent"><strong>-263.2%</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert-box">
+            <h3>💡 Items for Possible Discussion</h3>
+            <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+                <li><strong>Capital Reserve ($30,000):</strong> Effectively not funded due to running a deficit.</li>
+                <li><strong>Off-Season Projects ($4,766 of $20,000):</strong> Only 24% spent. What's the plan?</li>
+                <li><strong>Training Costs ($12,971 vs $6,500):</strong> Doubled budget. Discussed in Director's report.</li>
+                <li><strong>Pool Maintenance ($7,976 vs $4,500):</strong> 77% over budget. Added cost due to lightning strike and learning new system.</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Financial Health Snapshot</h3>
+            <p><strong>Operating Margin:</strong> 19.8% (Excellent for nonprofits!)</p>
+            <p><strong>Expense Ratio:</strong> 80.2% (Very efficient - below 85% benchmark)</p>
+            <p><strong>Revenue Concentration:</strong> 98.6% from registrations (Consider diversification)</p>
+            <p><strong>Budget Accuracy:</strong> Income 21% above, Expenses 10% below (Review budgeting process)</p>
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #7f8c8d; text-align: center;">
+            <p>Interactive Report Generated for Camp Downer Board | Hover over highlighted items for detailed explanations</p>
+            <p>For questions, contact the Finance Committee Chair</p>
+        </div>
+    </div>
+</body>
+</html>

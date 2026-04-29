@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Statement of Financial Position (Interactive)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+        }
+
+        h1 { font-size: 24px; color: #2c3e50; margin-bottom: 5px; }
+        h2 { font-size: 18px; color: #34495e; margin-bottom: 3px; }
+        .date { color: #7f8c8d; font-size: 14px; }
+
+        .equation-box {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .equation {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .equation-values {
+            font-size: 24px;
+            margin-top: 15px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .card.green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .card.blue { background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); }
+        .card.red { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
+
+        .card-value { font-size: 24px; font-weight: 700; }
+        .card-label { font-size: 12px; opacity: 0.9; margin-top: 5px; }
+
+        .section { margin: 30px 0; }
+        .section-title {
+            font-size: 18px;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover { background: #f8f9fa; }
+
+        .category-header {
+            background: #ecf0f1 !important;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .subcategory { padding-left: 35px !important; }
+        .sub-subcategory { padding-left: 55px !important; font-size: 13px; }
+
+        .total-row {
+            font-weight: 600;
+            background: #f8f9fa;
+            border-top: 2px solid #34495e;
+        }
+
+        .grand-total {
+            font-weight: 700;
+            background: #2c3e50;
+            color: white;
+            font-size: 15px;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #3498db;
+            color: #2980b9;
+        }
+
+        .tooltip:hover {
+            color: #1a5276;
+            border-bottom-color: #1a5276;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 280px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .pie-assets {
+            background: conic-gradient(
+                #3498db 0deg 158deg,
+                #2ecc71 158deg 255deg,
+                #9b59b6 255deg 360deg
+            );
+        }
+
+        .pie-label {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .ratio-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .ratio-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .ratio-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #27ae60;
+        }
+
+        .ratio-label { font-size: 14px; color: #7f8c8d; }
+        .ratio-explain { font-size: 12px; color: #95a5a6; margin-top: 8px; }
+
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .nav-links a {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover { background: #2980b9; }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .equation { font-size: 16px; }
+            .equation-values { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Camp Downer, Inc.</h1>
+            <h2>Statement of Financial Position</h2>
+            <p class="date">As of April 27, 2026 | Cash Basis</p>
+        </header>
+
+        <div class="equation-box">
+            <div class="equation">ASSETS = LIABILITIES + EQUITY</div>
+            <div class="equation-values">
+                $1,950,284 = $3,746 + $1,946,539
+            </div>
+            <div style="margin-top: 10px; font-size: 14px; opacity: 0.9;">
+                What We Own = What We Owe + Net Worth
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card green">
+                <div class="card-value">$1,950,284</div>
+                <div class="card-label">Total Assets</div>
+            </div>
+            <div class="card red">
+                <div class="card-value">$3,746</div>
+                <div class="card-label">Total Liabilities</div>
+            </div>
+            <div class="card blue">
+                <div class="card-value">$1,946,539</div>
+                <div class="card-label">Net Worth (Equity)</div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>What This Shows:</strong> A balance sheet is a financial "snapshot" - it shows exactly where we stand at this moment. Camp Downer owns $1.95 million in assets and owes only $3,746, leaving us with nearly $1.95 million in net worth.
+        </div>
+
+        <div class="info-box" style="background: #f8f9fa; border-left-color: #7f8c8d;">
+            <span style="background: #3498db; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">ℹ</span>
+            <span style="margin-left: 6px;">Items in <span style="color: #3498db; font-weight: 500;">blue text</span> have more info — hover to see details.</span>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Assets - What We Own</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th class="number">Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="category-header">
+                        <td colspan="2">Current Assets</td>
+                    </tr>
+                    <tr class="category-header">
+                        <td class="subcategory">Bank Accounts</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="sub-subcategory tooltip">Basic Checking (2835)
+                            <span class="tooltiptext">Main operating account for day-to-day expenses. High balance because registration revenue is in, but summer expenses haven't started.</span>
+                        </td>
+                        <td class="number">$593,146.17</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-subcategory tooltip">Money Market (MMA 2061)
+                            <span class="tooltiptext">Savings account earning interest. Provides liquidity while earning more than checking.</span>
+                        </td>
+                        <td class="number">$254,218.17</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-subcategory tooltip">Scholarship Fund (9129)
+                            <span class="tooltiptext">Historically designated for scholarships. Being drawn down per Nov 2025 decision to fund scholarships from general operations.</span>
+                        </td>
+                        <td class="number">$7,853.02</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-subcategory">Petty Cash</td>
+                        <td class="number">$178.00</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td class="subcategory">Total Bank Accounts</td>
+                        <td class="number">$855,395.36</td>
+                    </tr>
+
+                    <tr class="category-header">
+                        <td class="subcategory">Other Current Assets</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="sub-subcategory tooltip">Fidelity Investment (6978)
+                            <span class="tooltiptext">Long-term investment portfolio managed by Pochop Financial. Mix of money market (62%) and stock ETFs (38%).</span>
+                        </td>
+                        <td class="number">$524,080.84</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-subcategory tooltip">Inventory
+                            <span class="tooltiptext">Camp store merchandise and supplies on hand.</span>
+                        </td>
+                        <td class="number">$3,730.17</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td class="subcategory">Total Other Current Assets</td>
+                        <td class="number">$527,811.01</td>
+                    </tr>
+
+                    <tr class="total-row" style="background: #d5dbdb;">
+                        <td><strong>Total Current Assets</strong></td>
+                        <td class="number"><strong>$1,383,206.37</strong></td>
+                    </tr>
+
+                    <tr class="category-header">
+                        <td colspan="2">Fixed Assets</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">Leasehold Improvements
+                            <span class="tooltiptext">Improvements made to state-owned property: dining hall (~$1M rehab 2012-13), pool, cabins, facilities. Original cost shown; actual ownership remains with the State of Vermont.</span>
+                        </td>
+                        <td class="number">$1,126,193.98</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">Equipment
+                            <span class="tooltiptext">Boats, kitchen equipment, maintenance tools, program equipment.</span>
+                        </td>
+                        <td class="number">$140,394.90</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Vehicles</td>
+                        <td class="number">$5,800.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Software</td>
+                        <td class="number">$4,700.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip" style="color: #c0392b;">Accumulated Depreciation
+                            <span class="tooltiptext">Accounting reduction in book value over time. Since we don't own these assets (they're on state land), this is purely for financial reporting — not tax purposes as a 501(c)(3).</span>
+                        </td>
+                        <td class="number" style="color: #c0392b;">($710,010.97)</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>Total Fixed Assets (Net)</strong></td>
+                        <td class="number"><strong>$567,077.91</strong></td>
+                    </tr>
+
+                    <tr class="grand-total">
+                        <td>TOTAL ASSETS</td>
+                        <td class="number">$1,950,284.28</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box" style="background: #fef9e7; border-left-color: #f39c12;">
+                <strong>About Fixed Assets:</strong> Camp Downer operates on 84 acres of state forest land under a lease with the Vermont Department of Forests, Parks and Recreation (through 2041). We don't own the land or buildings — the state does. The $567K in "Fixed Assets" represents the <em>accounting book value</em> of improvements we've made (dining hall, pool, cabins, etc.), not property ownership. These improvements become state property at lease termination. This is standard "leasehold improvement" accounting — we track the value for financial reporting, but it's paper value rather than something we could sell.
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div>
+                <div class="pie-chart pie-assets"></div>
+                <div class="pie-label">Asset Allocation</div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>Cash & Bank: $855K (44%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2ecc71;"></div>
+                    <span>Investments: $524K (27%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9b59b6;"></div>
+                    <span>Property & Equipment: $567K (29%)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Liabilities - What We Owe</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th class="number">Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="category-header">
+                        <td colspan="2">Current Liabilities</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">M&T Business Credit Card (5542)
+                            <span class="tooltiptext">Business credit card balance. Paid in full regularly.</span>
+                        </td>
+                        <td class="number">$3,477.69</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">VT Saves
+                            <span class="tooltiptext">Vermont's state retirement program. Employee contributions collected but not yet remitted.</span>
+                        </td>
+                        <td class="number">$267.88</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Current Liabilities</td>
+                        <td class="number">$3,745.57</td>
+                    </tr>
+
+                    <tr class="grand-total">
+                        <td>TOTAL LIABILITIES</td>
+                        <td class="number">$3,745.57</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box" style="background: #eafaf1; border-color: #27ae60;">
+                <strong>Excellent Position:</strong> Camp Downer is essentially debt-free. Our only liabilities are a small credit card balance and a routine payroll contribution. No loans, no mortgage, no long-term debt.
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Equity - Net Worth</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th class="number">Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="tooltip">Unrestricted Fund Balance
+                            <span class="tooltiptext">Accumulated surplus from all prior years combined. Each year, Net Income is added to this balance (or subtracted if a deficit). This is the running total in QuickBooks from decades of operations — like a nonprofit's "retained earnings."</span>
+                        </td>
+                        <td class="number">$1,598,531.80</td>
+                    </tr>
+                    <tr>
+                        <td class="tooltip">Net Income (Year-to-Date)
+                            <span class="tooltiptext">This year's surplus so far. Will be added to Fund Balance at year-end. Currently high due to seasonal timing.</span>
+                        </td>
+                        <td class="number">$348,006.91</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td>TOTAL EQUITY</td>
+                        <td class="number">$1,946,538.71</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Financial Health Ratios</h3>
+
+            <div class="ratio-cards">
+                <div class="ratio-card">
+                    <div class="ratio-value">369:1</div>
+                    <div class="ratio-label">Current Ratio</div>
+                    <div class="ratio-explain">For every $1 we owe short-term, we have $369 to pay it. Industry standard is 2:1. We're extremely liquid.</div>
+                </div>
+                <div class="ratio-card">
+                    <div class="ratio-value">0.2%</div>
+                    <div class="ratio-label">Debt Ratio</div>
+                    <div class="ratio-explain">Only 0.2% of our assets are financed by debt. We're essentially debt-free.</div>
+                </div>
+                <div class="ratio-card">
+                    <div class="ratio-value">2.1 Years</div>
+                    <div class="ratio-label">Operating Reserve</div>
+                    <div class="ratio-explain">We could operate for over 2 years with no new revenue. This is a very strong reserve position.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Key Questions for Board Discussion</h3>
+            <ul style="margin-left: 20px; line-height: 2;">
+                <li><strong>Reserve Policy:</strong> With 2+ years of reserves, does the board have a formal policy on target reserve levels?</li>
+                <li><strong>Scholarship Funding:</strong> Per Nov 2025 decision, scholarships are now funded from general operations. The dedicated fund ($7,853) is being drawn down.</li>
+                <li><strong>Capital Planning:</strong> Fixed assets of $567K (after depreciation) - what major replacements are anticipated?</li>
+                <li><strong>Investment Level:</strong> Is $524K the right amount in Fidelity? Should more or less be invested?</li>
+            </ul>
+        </div>
+
+        <div class="nav-links">
+            <a href="Budget-vs-Actuals-Interactive.html">Budget vs Actuals</a>
+            <a href="Statement-of-Activity-Interactive.html">Statement of Activity</a>
+            <a href="Fidelity-Investment-Interactive.html">Investment Report</a>
+            <a href="Financial-Dashboard.html">Dashboard</a>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 12px;">
+            Camp Downer, Inc. | May 2026 Board Meeting | Cash Basis Accounting
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Fidelity Investment Statement (Interactive)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #003864;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #003864;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #006600;
+            margin-bottom: 3px;
+        }
+
+        .date {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        th {
+            background: #003864;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .category-header {
+            background: #e6f2ff !important;
+            font-weight: 600;
+            color: #003864;
+            font-size: 14px;
+        }
+
+        .total-row {
+            font-weight: 600;
+            background: #f8f9fa;
+            border-top: 2px solid #003864;
+            border-bottom: 2px solid #003864;
+        }
+
+        .excellent { color: #27ae60; font-weight: 600; }
+        .good { color: #16a085; }
+        .negative { color: #c0392b; }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #999;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 350px;
+            background-color: #003864;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -175px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.5;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #003864 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .info-box {
+            background: #e6f2ff;
+            border-left: 4px solid #003864;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            color: #003864;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .success-box {
+            background: #eafaf1;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box h3 {
+            color: #1e8449;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .chart-box {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .chart-box h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .pie-chart {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .pie-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .pie-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+
+        .pie-label {
+            flex: 1;
+            font-size: 12px;
+        }
+
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+            .tooltip .tooltiptext { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Camp Downer, Inc.</h1>
+            <h2>Fidelity Investment Account Statement</h2>
+            <p class="date">October 1 - October 31, 2025 | Account # 637-396978</p>
+        </header>
+
+        <div class="info-box" style="background: #e8f4f8; border-left-color: #003864;">
+            <h3>📄 Source Document</h3>
+            <p style="margin-bottom: 5px;">This interactive version is based on the original PDF:</p>
+            <p><a href="https://drive.google.com/file/d/1zhwA14Zo7u1_XXKaf3NIfTBJh_GvjWFw/view?usp=sharing"
+                  style="color: #003864; font-weight: 600; text-decoration: none; border-bottom: 1px solid #003864;"
+                  target="_blank">
+                📎 View Original PDF in Google Drive →
+            </a></p>
+        </div>
+
+        <div class="success-box">
+            <h3>📊 What is This Account?</h3>
+            <p>This is our <strong>investment account</strong> managed by Pochop Financial Management through Fidelity.</p>
+            <p style="margin-top: 8px;"><strong>Purpose:</strong> To grow camp's reserves over time instead of letting money sit idle in checking.</p>
+            <p style="margin-top: 8px;"><strong>Current Value:</strong> $531,069 | <strong>Year-to-Date Return:</strong> 6.75% (excellent!)</p>
+        </div>
+
+        <div class="chart-box">
+            <h4>💼 Portfolio Allocation (How Our Money is Invested)</h4>
+            <div class="pie-chart">
+                <div class="pie-item">
+                    <div class="pie-color" style="background: #3498db;"></div>
+                    <div class="pie-label"><strong>62%</strong> Money Market (Safe)</div>
+                </div>
+                <div class="pie-item">
+                    <div class="pie-color" style="background: #27ae60;"></div>
+                    <div class="pie-label"><strong>15%</strong> Large-Cap Stocks (S&P 500)</div>
+                </div>
+                <div class="pie-item">
+                    <div class="pie-color" style="background: #e74c3c;"></div>
+                    <div class="pie-label"><strong>8%</strong> Technology Stocks</div>
+                </div>
+                <div class="pie-item">
+                    <div class="pie-color" style="background: #f39c12;"></div>
+                    <div class="pie-label"><strong>7%</strong> Mid-Cap Stocks</div>
+                </div>
+                <div class="pie-item">
+                    <div class="pie-color" style="background: #9b59b6;"></div>
+                    <div class="pie-label"><strong>7%</strong> Small-Cap Stocks</div>
+                </div>
+                <div class="pie-item">
+                    <div class="pie-color" style="background: #1abc9c;"></div>
+                    <div class="pie-label"><strong>1%</strong> Financial Stocks</div>
+                </div>
+            </div>
+            <p style="margin-top: 15px; font-size: 12px; color: #7f8c8d;">
+                <strong>Strategy:</strong> Conservative growth - 62% in very safe money market, 38% in diversified stocks
+            </p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 35%;">HOLDING</th>
+                    <th style="width: 10%;">SYMBOL</th>
+                    <th class="number" style="width: 15%;">VALUE</th>
+                    <th class="number" style="width: 10%;">% OF TOTAL</th>
+                    <th class="number" style="width: 15%;">GAIN/LOSS</th>
+                    <th class="number" style="width: 15%;">YIELD</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- SAFE HOLDINGS -->
+                <tr class="category-header">
+                    <td colspan="6">SAFE HOLDINGS (62% - Low Risk)</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="tooltip">Fidelity Government Cash Reserves
+                            <span class="tooltiptext">
+                                <strong>What this is:</strong><br>
+                                A money market fund (like a super-safe savings account).<br><br>
+
+                                <strong>What it invests in:</strong><br>
+                                Ultra-safe U.S. government securities.<br><br>
+
+                                <strong>Current yield: 3.84%</strong><br>
+                                Annual income: $13,538<br><br>
+
+                                <strong>Safety:</strong> Extremely low risk<br>
+                                <strong>Liquidity:</strong> Can sell instantly<br><br>
+
+                                <strong>Why we keep 62% here:</strong><br>
+                                • Safety first (we're a nonprofit!)<br>
+                                • Easy access if camp needs money<br>
+                                • Much better than checking (3.84% vs 0.1%)
+                            </span>
+                        </span>
+                    </td>
+                    <td>FDRXX</td>
+                    <td class="number">329,072</td>
+                    <td class="number">62%</td>
+                    <td class="number">—</td>
+                    <td class="number excellent">3.84%</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>Total Safe Holdings</strong></td>
+                    <td></td>
+                    <td class="number"><strong>329,072</strong></td>
+                    <td class="number"><strong>62%</strong></td>
+                    <td class="number"><strong>—</strong></td>
+                    <td class="number"><strong>3.84%</strong></td>
+                </tr>
+
+                <!-- STOCK HOLDINGS -->
+                <tr class="category-header">
+                    <td colspan="6">STOCK HOLDINGS (38% - Moderate Risk)</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="tooltip excellent">SPDR S&P 500 ETF
+                            <span class="tooltiptext">
+                                <strong>What this is:</strong><br>
+                                An ETF that tracks the S&P 500 (the 500 largest U.S. companies).<br><br>
+
+                                <strong>What we own:</strong><br>
+                                By owning this, we own tiny pieces of: Apple, Microsoft, Amazon, Google, Berkshire Hathaway, and 495 others!<br><br>
+
+                                <strong>Our investment:</strong><br>
+                                • 115 shares at $682/share<br>
+                                • Cost: $69,834<br>
+                                • Current value: $78,437<br>
+                                • Gain: $8,603 (12.3% profit!)<br><br>
+
+                                <strong>Why own this:</strong><br>
+                                • Instant diversification (500 companies)<br>
+                                • Historically ~10% annual returns<br>
+                                • Very low fees (0.09%)
+                            </span>
+                        </span>
+                    </td>
+                    <td>SPY</td>
+                    <td class="number">78,437</td>
+                    <td class="number">15%</td>
+                    <td class="number excellent">+8,603</td>
+                    <td class="number">1.06%</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="tooltip excellent">Technology Sector ETF
+                            <span class="tooltiptext">
+                                <strong>What this is:</strong><br>
+                                An ETF that invests ONLY in technology companies.<br><br>
+
+                                <strong>Holdings include:</strong><br>
+                                Apple, Microsoft, NVIDIA, Broadcom, Adobe, Salesforce<br><br>
+
+                                <strong>Our investment:</strong><br>
+                                • 145 shares at $300.68/share<br>
+                                • Cost: $34,813<br>
+                                • Current value: $43,599<br>
+                                • Gain: $8,786 (25.2% profit!)<br><br>
+
+                                <strong>Why own this:</strong><br>
+                                • Technology sector growth potential<br>
+                                • Focused bet on tech innovation<br><br>
+
+                                <strong>Risk:</strong> More volatile than S&P 500<br>
+                                (Tech can swing up or down more dramatically)
+                            </span>
+                        </span>
+                    </td>
+                    <td>XLK</td>
+                    <td class="number">43,599</td>
+                    <td class="number">8%</td>
+                    <td class="number excellent">+8,786</td>
+                    <td class="number">0.50%</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="tooltip good">Vanguard Mid-Cap Growth
+                            <span class="tooltiptext">
+                                <strong>What this is:</strong><br>
+                                Invests in mid-sized companies that are growing.<br><br>
+
+                                <strong>"Mid-cap":</strong> Companies worth $2-10 billion<br>
+                                <strong>"Growth":</strong> Expected to grow faster than average<br><br>
+
+                                <strong>Examples:</strong><br>
+                                Chipotle, Zoom, DocuSign, Etsy, Spotify<br><br>
+
+                                <strong>Our investment:</strong><br>
+                                • Cost: $34,933<br>
+                                • Value: $37,655<br>
+                                • Gain: $2,722 (7.8%)<br><br>
+
+                                <strong>Why own this:</strong><br>
+                                • Mid-cap stocks often grow faster than large-cap<br>
+                                • "Goldilocks" size - big enough to be stable, small enough to grow<br>
+                                • Diversification from our large-cap holdings
+                            </span>
+                        </span>
+                    </td>
+                    <td>VOT</td>
+                    <td class="number">37,655</td>
+                    <td class="number">7%</td>
+                    <td class="number excellent">+2,722</td>
+                    <td class="number">0.62%</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="tooltip">iShares Core S&P Small-Cap
+                            <span class="tooltiptext">
+                                <strong>What this is:</strong><br>
+                                Invests in small U.S. companies.<br><br>
+
+                                <strong>"Small-cap":</strong> Companies worth $300M - $2B<br>
+                                Tracks ~600 small companies<br><br>
+
+                                <strong>Our investment:</strong><br>
+                                • Cost: $35,046<br>
+                                • Value: $34,869<br>
+                                • Loss: ($178) (-0.5%)<br><br>
+
+                                <strong>Why own this despite the small loss:</strong><br>
+                                • Small companies can become big (high growth potential)<br>
+                                • Good diversification<br>
+                                • Higher dividends (1.95% yield)<br><br>
+
+                                <strong>Risk:</strong> More volatile than large companies
+                            </span>
+                        </span>
+                    </td>
+                    <td>IJR</td>
+                    <td class="number">34,869</td>
+                    <td class="number">7%</td>
+                    <td class="number negative">(178)</td>
+                    <td class="number good">1.95%</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="tooltip">Financial Sector ETF
+                            <span class="tooltiptext">
+                                <strong>What this is:</strong><br>
+                                Invests in financial sector companies.<br><br>
+
+                                <strong>Holdings include:</strong><br>
+                                JPMorgan, Bank of America, Wells Fargo, Visa, Mastercard<br><br>
+
+                                <strong>Our investment:</strong><br>
+                                • Small position (only 1% of portfolio)<br>
+                                • Gain: $253 (3.6%)<br><br>
+
+                                <strong>Why own this:</strong><br>
+                                • Adds financial sector exposure<br>
+                                • Good dividend payers (1.40% yield)
+                            </span>
+                        </span>
+                    </td>
+                    <td>XLF</td>
+                    <td class="number">7,227</td>
+                    <td class="number">1%</td>
+                    <td class="number excellent">+253</td>
+                    <td class="number">1.40%</td>
+                </tr>
+
+                <tr>
+                    <td>Cash</td>
+                    <td>—</td>
+                    <td class="number">211</td>
+                    <td class="number">0%</td>
+                    <td class="number">—</td>
+                    <td class="number">—</td>
+                </tr>
+
+                <tr class="total-row">
+                    <td><strong>Total Stock Holdings</strong></td>
+                    <td></td>
+                    <td class="number"><strong>201,998</strong></td>
+                    <td class="number"><strong>38%</strong></td>
+                    <td class="number excellent"><strong>+20,186</strong></td>
+                    <td class="number"><strong>—</strong></td>
+                </tr>
+
+                <tr style="background: #d5f4e6; font-weight: 700; font-size: 14px;">
+                    <td><strong>
+                        <span class="tooltip excellent">TOTAL PORTFOLIO
+                            <span class="tooltiptext">
+                                <strong>Complete portfolio value</strong><br><br>
+                                Safe holdings: $329,072 (62%)<br>
+                                Stock holdings: $201,998 (38%)<br>
+                                Total: $531,069<br><br>
+                                Year-to-date performance:<br>
+                                Started: $497,507<br>
+                                Ended: $531,069<br>
+                                Gain: $33,562 (6.75% return!)
+                            </span>
+                        </span>
+                    </strong></td>
+                    <td></td>
+                    <td class="number excellent"><strong>531,069</strong></td>
+                    <td class="number"><strong>100%</strong></td>
+                    <td class="number excellent"><strong>+20,186</strong></td>
+                    <td class="number"><strong>—</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <h3>💰 How We Made Money This Year</h3>
+            <table style="font-size: 13px; margin-top: 10px;">
+                <tr>
+                    <td style="padding: 5px;">Starting Value (Jan 1):</td>
+                    <td class="number" style="padding: 5px;">$497,507</td>
+                </tr>
+                <tr style="background: #f0f8ff;">
+                    <td style="padding: 5px;">Plus: Dividend Income</td>
+                    <td class="number good" style="padding: 5px;">$12,626</td>
+                </tr>
+                <tr style="background: #f0f8ff;">
+                    <td style="padding: 5px;">Plus: Capital Gains (value increased)</td>
+                    <td class="number good" style="padding: 5px;">$36,649</td>
+                </tr>
+                <tr style="background: #ffe6e6;">
+                    <td style="padding: 5px;">Minus: Management Fees</td>
+                    <td class="number" style="padding: 5px;">($3,086)</td>
+                </tr>
+                <tr style="font-weight: 600; background: #e6f9e6;">
+                    <td style="padding: 8px;"><strong>Ending Value (Oct 31):</strong></td>
+                    <td class="number excellent" style="padding: 8px;"><strong>$531,069</strong></td>
+                </tr>
+                <tr style="font-weight: 600; background: #e6f9e6;">
+                    <td style="padding: 8px;"><strong>Total Gain:</strong></td>
+                    <td class="number excellent" style="padding: 8px;"><strong>$33,562 (6.75%)</strong></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="success-box">
+            <h3>📈 Performance Analysis</h3>
+            <p><strong>This Year's Return: 6.75%</strong> - Excellent performance!</p>
+            <p style="margin-top: 8px;"><strong>Comparison to Benchmarks:</strong></p>
+            <ul style="margin: 8px 0 0 25px; line-height: 1.8;">
+                <li>S&P 500 YTD: ~6-8% (we're in line with the market!)</li>
+                <li>Money market: ~4% (our safe portion is doing well)</li>
+                <li>Our blended return: 6.75% beats typical 60/40 portfolio</li>
+            </ul>
+            <p style="margin-top: 10px;"><strong>Sources of Return:</strong></p>
+            <ul style="margin: 8px 0 0 25px; line-height: 1.8;">
+                <li><strong>Dividends:</strong> $12,626 (cash we received)</li>
+                <li><strong>Capital gains:</strong> $36,649 (value increased)</li>
+                <li><strong>Management costs:</strong> ($3,086) - 0.70% annual fee</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>🎯 Investment Strategy Assessment</h3>
+            <p><strong>Current Allocation: Conservative Growth</strong></p>
+            <p style="margin-top: 10px;">62% safe / 38% stocks = Conservative approach</p>
+
+            <table style="width: 100%; margin-top: 15px; font-size: 12px;">
+                <thead>
+                    <tr style="background: #f0f8ff;">
+                        <th style="padding: 8px; text-align: left;">Risk Level</th>
+                        <th style="padding: 8px; text-align: left;">Typical Allocation</th>
+                        <th style="padding: 8px; text-align: left;">Expected Return</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 5px;">Very Conservative</td>
+                        <td style="padding: 5px;">80-90% safe / 10-20% stocks</td>
+                        <td style="padding: 5px;">3-5% annually</td>
+                    </tr>
+                    <tr style="background: #e6f9e6; font-weight: 600;">
+                        <td style="padding: 5px;">Conservative (OURS) ←</td>
+                        <td style="padding: 5px;">60-70% safe / 30-40% stocks</td>
+                        <td style="padding: 5px;">5-7% annually</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px;">Moderate</td>
+                        <td style="padding: 5px;">40-50% safe / 50-60% stocks</td>
+                        <td style="padding: 5px;">6-8% annually</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px;">Aggressive</td>
+                        <td style="padding: 5px;">0-20% safe / 80-100% stocks</td>
+                        <td style="padding: 5px;">8-12% annually</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p style="margin-top: 15px; font-size: 13px; color: #27ae60; font-weight: 600;">
+                ✓ Our 6.75% return exceeds expectations for a conservative strategy!
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Key Investment Facts</h3>
+            <ul style="margin: 10px 0 0 25px; line-height: 1.8;">
+                <li><strong>Account Manager:</strong> Pochop Financial Management (802-865-4900)</li>
+                <li><strong>Management Fee:</strong> 0.70% annually (~$3,700/year)</li>
+                <li><strong>Custodian:</strong> Fidelity / National Financial Services</li>
+                <li><strong>Risk Level:</strong> Conservative (62% safe, 38% stocks)</li>
+                <li><strong>Expected Annual Income:</strong> ~$15,600 from dividends</li>
+                <li><strong>Liquidity:</strong> Can access funds in 2-3 business days</li>
+            </ul>
+        </div>
+
+        <div class="info-box" style="background: #fef5e7; border-left-color: #f39c12;">
+            <h3>🤔 Questions for Board Discussion</h3>
+            <ul style="margin: 10px 0 0 25px; line-height: 1.8;">
+                <li><strong>Allocation:</strong> Is 38% in stocks the right level for our risk tolerance?</li>
+                <li><strong>Performance:</strong> Is 6.75% return adequate for our goals?</li>
+                <li><strong>Fees:</strong> Is the 0.70% management fee justified for the service we receive?</li>
+                <li><strong>Diversification:</strong> Should we add international stocks or bonds?</li>
+                <li><strong>Use:</strong> When should we draw from this account for major projects?</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #7f8c8d; text-align: center;">
+            <p>Interactive Report Generated for Camp Downer Board | Hover over investments for detailed explanations</p>
+            <p>For questions about the account, contact Pochop Financial Management: (802) 865-4900</p>
+        </div>
+    </div>
+</body>
+</html>

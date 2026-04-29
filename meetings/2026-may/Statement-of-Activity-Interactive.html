@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Statement of Activity (Interactive)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+        }
+
+        h1 { font-size: 24px; color: #2c3e50; margin-bottom: 5px; }
+        h2 { font-size: 18px; color: #34495e; margin-bottom: 3px; }
+        .date { color: #7f8c8d; font-size: 14px; }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-box {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .flow-box.green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .flow-box.red { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
+        .flow-box.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+
+        .flow-value { font-size: 22px; font-weight: 700; }
+        .flow-label { font-size: 11px; opacity: 0.9; }
+
+        .flow-arrow {
+            font-size: 24px;
+            color: #7f8c8d;
+        }
+
+        .section { margin: 30px 0; }
+        .section-title {
+            font-size: 18px;
+            color: #2c3e50;
+            border-left: 4px solid #27ae60;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+
+        .section-title.expense { border-left-color: #e74c3c; }
+        .section-title.other { border-left-color: #9b59b6; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover { background: #f8f9fa; }
+
+        .category-header {
+            background: #ecf0f1 !important;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .subcategory { padding-left: 35px !important; }
+
+        .total-row {
+            font-weight: 600;
+            background: #f8f9fa;
+            border-top: 2px solid #34495e;
+        }
+
+        .grand-total {
+            font-weight: 700;
+            background: #2c3e50;
+            color: white;
+            font-size: 15px;
+        }
+
+        .grand-total.green { background: #27ae60; }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #3498db;
+            color: #2980b9;
+        }
+
+        .tooltip:hover {
+            color: #1a5276;
+            border-bottom-color: #1a5276;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 280px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .bar-chart {
+            margin: 20px 0;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .bar-label {
+            width: 150px;
+            font-size: 13px;
+        }
+
+        .bar-container {
+            flex: 1;
+            background: #ecf0f1;
+            height: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 15px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .bar-fill.revenue { background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%); }
+        .bar-fill.expense { background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); }
+
+        .bar-value {
+            width: 100px;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .nav-links a {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Camp Downer, Inc.</h1>
+            <h2>Statement of Activity</h2>
+            <p class="date">January 1 - April 27, 2026 | Cash Basis</p>
+        </header>
+
+        <div class="flow-diagram">
+            <div class="flow-box green">
+                <div class="flow-value">$450,738</div>
+                <div class="flow-label">Revenue</div>
+            </div>
+            <div class="flow-arrow">−</div>
+            <div class="flow-box red">
+                <div class="flow-value">$76,937</div>
+                <div class="flow-label">Expenditures</div>
+            </div>
+            <div class="flow-arrow">−</div>
+            <div class="flow-box" style="background: #95a5a6; color: white;">
+                <div class="flow-value">$25,794</div>
+                <div class="flow-label">Other (Net)</div>
+            </div>
+            <div class="flow-arrow">=</div>
+            <div class="flow-box blue">
+                <div class="flow-value">$348,007</div>
+                <div class="flow-label">Net Revenue</div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Reading This Report:</strong> The Statement of Activity (also called a P&L or Income Statement) shows money flowing in and out over a period of time. Revenue minus Expenditures equals Net Revenue - the "bottom line."
+        </div>
+
+        <div class="info-box" style="background: #e8f6e8; border-left-color: #27ae60;">
+            <strong>Cash vs. Enrolled Revenue:</strong> Registration revenue of $481,125 (gross) represents <strong>65% of $739,025 in total Summer 2026 enrollments</strong>. Approximately $258,000 in payments is still expected before camp starts. This report uses cash basis accounting - showing actual payments received, not total commitments.
+        </div>
+
+        <div class="info-box" style="background: #f8f9fa; border-left-color: #7f8c8d;">
+            <span style="background: #3498db; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">ℹ</span>
+            <span style="margin-left: 6px;">Items in <span style="color: #3498db; font-weight: 500;">blue text</span> have more info — hover to see details.</span>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Revenue - Money Coming In</h3>
+
+            <div class="bar-chart">
+                <div class="bar-row">
+                    <div class="bar-label">Registrations (Net)</div>
+                    <div class="bar-container">
+                        <div class="bar-fill revenue" style="width: 99.4%;">99.4%</div>
+                    </div>
+                    <div class="bar-value">$447,945</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">Donations</div>
+                    <div class="bar-container">
+                        <div class="bar-fill revenue" style="width: 0.6%;"></div>
+                    </div>
+                    <div class="bar-value">$2,670</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">Other</div>
+                    <div class="bar-container">
+                        <div class="bar-fill revenue" style="width: 0.03%;"></div>
+                    </div>
+                    <div class="bar-value">$123</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th class="number">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="category-header">
+                        <td>Donations</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Donations - Restricted Scholarship</td>
+                        <td class="number">$500.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Donations - Restricted</td>
+                        <td class="number">$100.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Unrestricted Donations</td>
+                        <td class="number">$2,070.00</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Donations</td>
+                        <td class="number">$2,670.00</td>
+                    </tr>
+
+                    <tr class="category-header">
+                        <td>Registrations</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">Gross Registrations
+                            <span class="tooltiptext">Total payments received from families registering for summer camp.</span>
+                        </td>
+                        <td class="number">$481,125.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Registration Refunds</td>
+                        <td class="number" style="color: #c0392b;">($5,820.00)</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">Scholarships
+                            <span class="tooltiptext">Financial aid provided to families who need assistance. Increases accessibility to camp.</span>
+                        </td>
+                        <td class="number" style="color: #c0392b;">($27,360.00)</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Net Registrations</td>
+                        <td class="number">$447,945.00</td>
+                    </tr>
+
+                    <tr>
+                        <td>Merchandise</td>
+                        <td class="number">$59.99</td>
+                    </tr>
+                    <tr>
+                        <td>Interest Earned</td>
+                        <td class="number">$62.68</td>
+                    </tr>
+
+                    <tr class="grand-total green">
+                        <td>TOTAL REVENUE</td>
+                        <td class="number">$450,737.67</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title expense">Expenditures - Money Going Out</h3>
+
+            <div class="bar-chart">
+                <div class="bar-row">
+                    <div class="bar-label">Finance</div>
+                    <div class="bar-container">
+                        <div class="bar-fill expense" style="width: 56.2%;">56.2%</div>
+                    </div>
+                    <div class="bar-value">$43,219</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">Operations</div>
+                    <div class="bar-container">
+                        <div class="bar-fill expense" style="width: 41.4%;">41.4%</div>
+                    </div>
+                    <div class="bar-value">$31,887</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">Building & Grounds</div>
+                    <div class="bar-container">
+                        <div class="bar-fill expense" style="width: 1.4%;"></div>
+                    </div>
+                    <div class="bar-value">$1,044</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">Insurance (Other)</div>
+                    <div class="bar-container">
+                        <div class="bar-fill expense" style="width: 1%;"></div>
+                    </div>
+                    <div class="bar-value">$786</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th class="number">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="category-header">
+                        <td>Operations</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">Staff Salaries
+                            <span class="tooltiptext">Largest expense category. Currently year-round/prep staff. Seasonal staff adds ~$230K in summer.</span>
+                        </td>
+                        <td class="number">$23,668.65</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Training</td>
+                        <td class="number">$5,227.50</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Office Supplies & Equipment</td>
+                        <td class="number">$1,316.52</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Other Meals</td>
+                        <td class="number">$546.75</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Merchandise Expenses</td>
+                        <td class="number">$500.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Director</td>
+                        <td class="number">$495.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Arts Programs Supplies</td>
+                        <td class="number">$107.88</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Staff</td>
+                        <td class="number">$25.19</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Operations</td>
+                        <td class="number">$31,887.49</td>
+                    </tr>
+
+                    <tr>
+                        <td>Insurance (Separate)</td>
+                        <td class="number">$786.00</td>
+                    </tr>
+
+                    <tr class="category-header">
+                        <td>Finance</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">Insurance
+                            <span class="tooltiptext">General liability insurance - required to operate. Protects camp if someone is injured.</span>
+                        </td>
+                        <td class="number">$18,802.56</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">Payment Processing Fees
+                            <span class="tooltiptext">Credit card fees - about 2.4% of registration revenue. Cost of accepting online payments.</span>
+                        </td>
+                        <td class="number">$10,832.92</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Professional Services</td>
+                        <td class="number">$3,339.19</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Travel Expenses</td>
+                        <td class="number">$2,683.26</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Advertising</td>
+                        <td class="number">$2,314.97</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Payroll Taxes</td>
+                        <td class="number">$2,046.18</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Payroll Fees</td>
+                        <td class="number">$1,681.90</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Telephone & Internet</td>
+                        <td class="number">$515.19</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Administration Expenses</td>
+                        <td class="number">$417.20</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Electric</td>
+                        <td class="number">$299.75</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Rent or Lease</td>
+                        <td class="number">$250.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Bank Charges</td>
+                        <td class="number">$36.00</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Finance</td>
+                        <td class="number">$43,219.12</td>
+                    </tr>
+
+                    <tr class="category-header">
+                        <td>Building & Grounds</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Facility Contractor Services</td>
+                        <td class="number">$996.00</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Maintenance Materials</td>
+                        <td class="number">$25.19</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Pool Maintenance</td>
+                        <td class="number">$23.00</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Building & Grounds</td>
+                        <td class="number">$1,044.19</td>
+                    </tr>
+
+                    <tr class="grand-total" style="background: #e74c3c;">
+                        <td>TOTAL EXPENDITURES</td>
+                        <td class="number">$76,936.80</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title" style="border-color: #27ae60;">Net Operating Revenue</h3>
+            <table>
+                <tbody>
+                    <tr class="grand-total green">
+                        <td>NET OPERATING REVENUE</td>
+                        <td class="number">$373,800.87</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title other">Other Revenue & Expenditures</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th class="number">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="category-header">
+                        <td>Other Revenue</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Dividend Income</td>
+                        <td class="number">$3,208.17</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Interest Income</td>
+                        <td class="number">$0.88</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip">Unrealized Gain/Loss
+                            <span class="tooltiptext">Paper loss on investments. Market value dropped but we haven't sold anything. Normal market fluctuation.</span>
+                        </td>
+                        <td class="number" style="color: #c0392b;">($9,175.63)</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Other Revenue</td>
+                        <td class="number" style="color: #c0392b;">($5,966.58)</td>
+                    </tr>
+
+                    <tr class="category-header">
+                        <td>Other Expenditures</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory tooltip" style="color: #95a5a6;">Depreciation*
+                            <span class="tooltiptext">Non-cash accounting entry. Inclusion on cash-basis report being verified with accountant.</span>
+                        </td>
+                        <td class="number" style="color: #95a5a6;">$18,970.34</td>
+                    </tr>
+                    <tr>
+                        <td class="subcategory">Fidelity Management Fees</td>
+                        <td class="number">$857.04</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Other Expenditures</td>
+                        <td class="number">$19,827.38</td>
+                    </tr>
+
+                    <tr class="total-row">
+                        <td>Net Other Revenue</td>
+                        <td class="number" style="color: #c0392b;">($25,793.96)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title" style="border-color: #3498db;">The Bottom Line</h3>
+            <table>
+                <tbody>
+                    <tr class="grand-total" style="background: #3498db; font-size: 18px;">
+                        <td>NET REVENUE</td>
+                        <td class="number">$348,006.91</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>Why Is Net Revenue So High?</strong><br>
+                This is normal seasonal timing! We've collected most registration revenue for the summer, but haven't incurred summer operating costs yet. By year-end, when dining service ($129K), staff salaries ($255K), and other summer costs are paid, this will balance out.
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="Budget-vs-Actuals-Interactive.html">Budget vs Actuals</a>
+            <a href="Statement-of-Financial-Position-Interactive.html">Balance Sheet</a>
+            <a href="Fidelity-Investment-Interactive.html">Investment Report</a>
+            <a href="Financial-Dashboard.html">Dashboard</a>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 12px;">
+            Camp Downer, Inc. | May 2026 Board Meeting | Cash Basis Accounting
+        </footer>
+    </div>
+</body>
+</html>
