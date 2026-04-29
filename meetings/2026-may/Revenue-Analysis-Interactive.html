@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Summer 2026 Revenue Analysis</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #27ae60;
+            padding-bottom: 20px;
+        }
+
+        h1 { font-size: 24px; color: #2c3e50; margin-bottom: 5px; }
+        h2 { font-size: 18px; color: #34495e; margin-bottom: 3px; }
+        .date { color: #7f8c8d; font-size: 14px; }
+
+        .projection-banner {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .projection-banner .icon { font-size: 24px; }
+        .projection-banner p { margin: 0; font-size: 14px; }
+
+        .hero-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .hero-card {
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .hero-card.revenue {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .hero-card.expenses {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .hero-card.surplus {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .hero-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .hero-label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .hero-sub {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 8px;
+        }
+
+        .comparison-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 40px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-bar .expenses-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+            width: 88.3%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .comparison-bar .surplus-bar {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+            width: 11.7%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .bar-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .section { margin: 40px 0; }
+
+        .section-title {
+            font-size: 18px;
+            color: #2c3e50;
+            border-left: 4px solid #27ae60;
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover { background: #f8f9fa; }
+
+        .total-row {
+            font-weight: 600;
+            background: #f8f9fa;
+            border-top: 2px solid #34495e;
+        }
+
+        .progress-cell {
+            width: 120px;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .tier-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .tier-card h4 {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .tier-card .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .tier-card .percent {
+            font-size: 14px;
+            color: #27ae60;
+            margin-top: 5px;
+        }
+
+        .tier-bar {
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .tier-bar .fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .tier-a .fill { background: #3498db; }
+        .tier-b .fill { background: #9b59b6; }
+        .tier-c .fill { background: #e67e22; }
+
+        .insight-box {
+            background: #e8f6f3;
+            border-left: 4px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .insight-box h4 {
+            color: #1e8449;
+            margin-bottom: 10px;
+        }
+
+        .insight-box ul {
+            margin-left: 20px;
+            color: #2c3e50;
+        }
+
+        .insight-box li {
+            margin: 8px 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .nav-links a {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover { background: #2980b9; }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .hero-section { grid-template-columns: 1fr; }
+            .tier-grid { grid-template-columns: 1fr; }
+            .hero-value { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Summer 2026 Revenue Analysis</h1>
+            <h2>Camp Downer, Inc.</h2>
+            <p class="date">Enrollment as of April 27, 2026 | Accrual Basis</p>
+        </header>
+
+        <div class="projection-banner">
+            <span class="icon">&#9432;</span>
+            <p><strong>Early Season Projection:</strong> These figures reflect current enrollments and will change as registrations continue through the summer. This is a point-in-time snapshot, not final revenue.</p>
+        </div>
+
+        <div class="hero-section">
+            <div class="hero-card revenue">
+                <div class="hero-value">$739,025</div>
+                <div class="hero-label">Projected Revenue</div>
+                <div class="hero-sub">Based on current enrollments</div>
+            </div>
+            <div class="hero-card expenses">
+                <div class="hero-value">$652,440</div>
+                <div class="hero-label">Budgeted Expenses</div>
+                <div class="hero-sub">Full year operating budget</div>
+            </div>
+            <div class="hero-card surplus">
+                <div class="hero-value">$86,585</div>
+                <div class="hero-label">Projected Surplus</div>
+                <div class="hero-sub">11.7% margin</div>
+            </div>
+        </div>
+
+        <div class="comparison-bar">
+            <div class="expenses-bar">Expenses: $652K (88%)</div>
+            <div class="surplus-bar">+$87K</div>
+        </div>
+
+        <div class="bar-legend">
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #c0392b;"></div>
+                <span>Budgeted Expenses</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #27ae60;"></div>
+                <span>Projected Surplus</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Revenue by Session</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Session</th>
+                        <th class="number">Revenue</th>
+                        <th class="number">% of Total</th>
+                        <th class="progress-cell">Distribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Session 3 (2-week)</strong></td>
+                        <td class="number">$154,330</td>
+                        <td class="number">20.9%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 76%; background: linear-gradient(90deg, #27ae60, #2ecc71);">21%</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>CIT II</strong></td>
+                        <td class="number">$47,850</td>
+                        <td class="number">6.5%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 24%; background: #9b59b6;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Session 6</td>
+                        <td class="number">$93,020</td>
+                        <td class="number">12.6%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 46%; background: #3498db;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Session 5</td>
+                        <td class="number">$92,480</td>
+                        <td class="number">12.5%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 46%; background: #3498db;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Session 4</td>
+                        <td class="number">$91,050</td>
+                        <td class="number">12.3%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%; background: #3498db;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Session 7</td>
+                        <td class="number">$88,700</td>
+                        <td class="number">12.0%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 44%; background: #3498db;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Session 2</td>
+                        <td class="number">$87,130</td>
+                        <td class="number">11.8%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 43%; background: #3498db;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Session 1</td>
+                        <td class="number">$82,560</td>
+                        <td class="number">11.2%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 41%; background: #f39c12;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Other</td>
+                        <td class="number">$1,905</td>
+                        <td class="number">0.3%</td>
+                        <td class="progress-cell">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 1%; background: #95a5a6;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>Total</strong></td>
+                        <td class="number"><strong>$739,025</strong></td>
+                        <td class="number"><strong>100%</strong></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Revenue by Pricing Tier</h3>
+
+            <div class="tier-grid">
+                <div class="tier-card tier-a">
+                    <h4>Tier A</h4>
+                    <div class="value">$219,160</div>
+                    <div class="percent">29.7%</div>
+                    <div style="font-size: 11px; color: #666; margin-top: 8px;">Growth rate — covers full costs + capital</div>
+                    <div class="tier-bar">
+                        <div class="fill" style="width: 82%;"></div>
+                    </div>
+                </div>
+                <div class="tier-card tier-b">
+                    <h4>Tier B</h4>
+                    <div class="value">$267,760</div>
+                    <div class="percent">36.2%</div>
+                    <div style="font-size: 11px; color: #666; margin-top: 8px;">Break-even rate — covers operating costs</div>
+                    <div class="tier-bar">
+                        <div class="fill" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="tier-card tier-c">
+                    <h4>Tier C</h4>
+                    <div class="value">$250,200</div>
+                    <div class="percent">33.9%</div>
+                    <div style="font-size: 11px; color: #666; margin-top: 8px;">Accessible rate — below true cost</div>
+                    <div class="tier-bar">
+                        <div class="fill" style="width: 93%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <h4>Tier Distribution Insights</h4>
+                <ul>
+                    <li><strong>Tier B (break-even) leads at 36%</strong> — most families choose the operating cost rate</li>
+                    <li><strong>Tier C (accessible) at 34%</strong> — mission-driven pricing fulfilling accessibility goal</li>
+                    <li><strong>Tier A (growth) at 30%</strong> — families choosing to support capital needs</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Session 3 & CIT II Breakdown</h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">Session 3 (2-week)</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tier</th>
+                                <th class="number">Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Tier A</td>
+                                <td class="number">$41,580</td>
+                            </tr>
+                            <tr>
+                                <td>Tier B</td>
+                                <td class="number">$41,470</td>
+                            </tr>
+                            <tr>
+                                <td>Tier C</td>
+                                <td class="number">$71,280</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td><strong>Total</strong></td>
+                                <td class="number"><strong>$154,330</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">CIT II (Separate Registration)</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tier</th>
+                                <th class="number">Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Tier A</td>
+                                <td class="number">$20,020</td>
+                            </tr>
+                            <tr>
+                                <td>Tier B</td>
+                                <td class="number">$18,590</td>
+                            </tr>
+                            <tr>
+                                <td>Tier C</td>
+                                <td class="number">$9,240</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td><strong>Total</strong></td>
+                                <td class="number"><strong>$47,850</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li><strong>Strong revenue position:</strong> $739K projected vs $652K budgeted expenses = $87K surplus (11.7% margin)</li>
+                <li><strong>Session 3 leads:</strong> The 2-week session generates $154K (21% of revenue)</li>
+                <li><strong>CIT II program:</strong> Separate registration brings in additional $48K (6.5%)</li>
+                <li><strong>Balanced session distribution:</strong> Sessions 1-2 and 4-7 each contribute 11-13%</li>
+                <li><strong>This is a projection:</strong> Registrations, cancellations, and refunds will affect final numbers</li>
+            </ul>
+        </div>
+
+        <div class="nav-links">
+            <a href="/" style="background: #2c3e50;">Home</a>
+            <a href="Financial-Dashboard.html">Financial Dashboard</a>
+            <a href="Budget-vs-Actuals-Interactive.html">Budget vs Actuals</a>
+            <a href="Statement-of-Activity-Interactive.html">Statement of Activity</a>
+            <a href="Statement-of-Financial-Position-Interactive.html">Balance Sheet</a>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 12px;">
+            Camp Downer, Inc. | May 2026 Board Meeting | Revenue projection based on CampSite enrollment data
+        </footer>
+    </div>
+</body>
+</html>
