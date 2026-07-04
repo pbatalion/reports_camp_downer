@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - One Page Financial Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            background: #1a1a2e;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        header h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        /* Hunter's 5 Card Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .metric-card .status-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .status-icon.up { background: #d4edda; }
+        .status-icon.down { background: #f8d7da; }
+        .status-icon.warning { background: #fff3cd; }
+        .status-icon.neutral { background: #e2e3e5; }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .metric-sublabel {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a2e;
+            line-height: 1.1;
+        }
+
+        .metric-value.negative { color: #c0392b; }
+        .metric-value.positive { color: #27ae60; }
+
+        .metric-context {
+            font-size: 12px;
+            color: #555;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            line-height: 1.5;
+        }
+
+        .metric-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .metric-status.green { background: #d4edda; color: #155724; }
+        .metric-status.yellow { background: #fff3cd; color: #856404; }
+        .metric-status.red { background: #f8d7da; color: #721c24; }
+
+        /* Bottom Section - Risks & Decisions */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1a1a2e;
+        }
+
+        .risk-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .risk-item:last-child { border-bottom: none; }
+
+        .risk-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .risk-dot.yellow { background: #f39c12; }
+        .risk-dot.orange { background: #e67e22; }
+        .risk-dot.red { background: #c0392b; }
+
+        .risk-text {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .decision-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: flex-start;
+        }
+
+        .decision-item:last-child { border-bottom: none; }
+
+        .decision-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .decision-text {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .decision-deadline {
+            font-size: 11px;
+            color: #e67e22;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            margin-top: 25px;
+            font-size: 11px;
+        }
+
+        footer a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+        }
+
+        footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 900px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 500px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>Camp Downer Financial Dashboard</h1>
+            <span class="date">As of April 27, 2026</span>
+        </header>
+
+        <p class="subtitle">One page. Five numbers. Five minutes. | May 2026 Board Meeting</p>
+
+        <div class="metrics-grid">
+            <!-- Card 1: Net Surplus/Deficit -->
+            <div class="metric-card">
+                <div class="status-icon up">&#8593;</div>
+                <div class="metric-label">Net Surplus / (Deficit)</div>
+                <div class="metric-sublabel">Projected vs. Budget</div>
+                <div class="metric-value positive">$59,225</div>
+                <div class="metric-context">
+                    Net revenue $712K vs. $652K budgeted expenses. <strong>8.3% margin.</strong>
+                </div>
+                <span class="metric-status green">On track</span>
+            </div>
+
+            <!-- Card 2: Cash on Hand -->
+            <div class="metric-card">
+                <div class="status-icon up">&#10003;</div>
+                <div class="metric-label">Cash on Hand</div>
+                <div class="metric-sublabel">Months of Operating Reserves</div>
+                <div class="metric-value">16 mo</div>
+                <div class="metric-context">
+                    $855K cash. At $54K/mo avg burn, strong reserves heading into summer.
+                </div>
+                <span class="metric-status green">Healthy</span>
+            </div>
+
+            <!-- Card 3: Cost Per Camper Week -->
+            <div class="metric-card">
+                <div class="status-icon neutral">$</div>
+                <div class="metric-label">Cost Per Camper Week</div>
+                <div class="metric-sublabel">True Cost vs. Avg Tuition</div>
+                <div class="metric-value">$1,553</div>
+                <div class="metric-context">
+                    Avg tuition charged: <strong>$1,695</strong><br>
+                    Gap: +$142/week (tuition covers cost)
+                </div>
+                <span class="metric-status green">Sustainable</span>
+            </div>
+
+            <!-- Card 4: Enrollment -->
+            <div class="metric-card">
+                <div class="status-icon up">&#8593;</div>
+                <div class="metric-label">Enrollment</div>
+                <div class="metric-sublabel">Summer 2026 vs. 2025</div>
+                <div class="metric-value">~420</div>
+                <div class="metric-context">
+                    Camper weeks enrolled. $739K gross revenue before $27K scholarships.
+                </div>
+                <span class="metric-status green">Strong</span>
+            </div>
+        </div>
+
+        <div class="bottom-grid">
+            <!-- Top Risks -->
+            <div class="section-card">
+                <div class="section-title">TOP RISKS: For Board Awareness</div>
+
+                <div class="risk-item">
+                    <div class="risk-dot yellow"></div>
+                    <div class="risk-text">
+                        <strong>Scholarship fund depletion.</strong> Dedicated fund at $7,853. Scholarships ($27K) now funded from operations per Nov 2025 decision. Working as intended but worth monitoring.
+                    </div>
+                </div>
+
+                <div class="risk-item">
+                    <div class="risk-dot yellow"></div>
+                    <div class="risk-text">
+                        <strong>Cash timing (Sept-Nov).</strong> Summer revenue stops but some fixed costs continue. Current reserves are strong, but this is the annual "danger zone" for camps.
+                    </div>
+                </div>
+
+                <div class="risk-item">
+                    <div class="risk-dot orange"></div>
+                    <div class="risk-text">
+                        <strong>Travel budget at 77%.</strong> $2,683 spent of $3,500 budget. Expect spending to slow now that camp season approaches.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decisions Needed -->
+            <div class="section-card">
+                <div class="section-title">DECISION NEEDED</div>
+
+                <div class="decision-item">
+                    <div class="decision-checkbox"></div>
+                    <div>
+                        <div class="decision-text">
+                            <strong>Confirm 2027 pricing tiers</strong> — Current tiered model working well (30% Tier A, 36% Tier B, 34% Tier C). Recommend keeping structure with inflation adjustment.
+                        </div>
+                        <div class="decision-deadline">Target: September board meeting</div>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-checkbox"></div>
+                    <div>
+                        <div class="decision-text">
+                            <strong>Scholarship funding policy review</strong> — With dedicated fund nearly depleted, confirm board is comfortable with operations-funded model going forward.
+                        </div>
+                        <div class="decision-deadline">Target: Annual meeting (Nov 2026)</div>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-checkbox"></div>
+                    <div>
+                        <div class="decision-text">
+                            <strong>Off-season project priorities</strong> — $20K budgeted but unspent. What projects should be prioritized before camp opens?
+                        </div>
+                        <div class="decision-deadline">Target: This meeting</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Camp Downer, Inc. | Prepared for Board of Trustees | Cash Basis Accounting</p>
+            <p style="margin-top: 8px;">
+                <a href="/">Home</a> &nbsp;|&nbsp;
+                <a href="Financial-Dashboard.html">Original Dashboard</a> &nbsp;|&nbsp;
+                <a href="Budget-vs-Actuals-Interactive.html">Full Budget Details</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Revenue & Cost Analysis</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #1a1a2e;
+            padding-bottom: 20px;
+        }
+
+        h1 { font-size: 24px; color: #1a1a2e; margin-bottom: 5px; }
+        .subtitle { color: #666; font-size: 14px; }
+
+        /* The One Metric Section */
+        .hero-metric {
+            background: linear-gradient(135deg, #1a5f4a 0%, #2e8b6e 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .hero-metric .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .hero-metric .comparison {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .hero-metric .side {
+            text-align: center;
+        }
+
+        .hero-metric .value {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .hero-metric .side-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .hero-metric .vs {
+            font-size: 24px;
+            font-weight: 300;
+            opacity: 0.7;
+        }
+
+        .hero-metric .gap-callout {
+            background: rgba(255,255,255,0.15);
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .hero-metric .gap-callout strong {
+            font-size: 20px;
+        }
+
+        /* Story Section */
+        .story-box {
+            background: #f8f9fa;
+            border-left: 4px solid #1a5f4a;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .story-box h3 {
+            color: #1a5f4a;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .story-box p {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        /* Expense Breakdown */
+        .section {
+            margin: 40px 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .expense-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .expense-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border-top: 4px solid #667eea;
+        }
+
+        .expense-card.staffing { border-top-color: #27ae60; }
+        .expense-card.program { border-top-color: #3498db; }
+        .expense-card.facilities { border-top-color: #e67e22; }
+        .expense-card.admin { border-top-color: #9b59b6; }
+
+        .expense-card .percent {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .expense-card .category {
+            font-size: 14px;
+            color: #666;
+            margin: 8px 0;
+        }
+
+        .expense-card .amount {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .expense-card .insight {
+            font-size: 12px;
+            color: #27ae60;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Revenue Grid */
+        .revenue-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .revenue-card {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .revenue-card.gross { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; }
+        .revenue-card.scholarships { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; }
+        .revenue-card.net { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; }
+
+        .revenue-card .value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .revenue-card .label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* Tier Breakdown */
+        .tier-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .tier-bar-container {
+            margin: 20px 0;
+        }
+
+        .tier-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tier-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .tier-segment.a { background: #3498db; }
+        .tier-segment.b { background: #9b59b6; }
+        .tier-segment.c { background: #e67e22; }
+
+        .tier-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .tier-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .tier-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        /* Quote */
+        .quote {
+            background: #1a1a2e;
+            color: white;
+            padding: 25px 35px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+            font-style: italic;
+            font-size: 16px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #1a1a2e;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover { background: #f8f9fa; }
+
+        .total-row {
+            font-weight: 600;
+            background: #f0f0f0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .nav-links a {
+            padding: 8px 16px;
+            background: #1a1a2e;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover { background: #2c3e50; }
+
+        @media (max-width: 768px) {
+            .expense-breakdown { grid-template-columns: 1fr; }
+            .revenue-grid { grid-template-columns: 1fr; }
+            .hero-metric .comparison { flex-direction: column; gap: 20px; }
+            .hero-metric .value { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Summer 2026: Revenue & Cost Analysis</h1>
+            <p class="subtitle">Camp Downer, Inc. | May 2026 Board Meeting</p>
+        </header>
+
+        <!-- THE ONE METRIC -->
+        <div class="hero-metric">
+            <div class="label">The One Metric You Must Know</div>
+            <h2 style="font-size: 22px; font-weight: 400; margin-bottom: 20px;">Cost Per Camper Week</h2>
+
+            <div class="comparison">
+                <div class="side">
+                    <div class="value">$1,553</div>
+                    <div class="side-label">True Cost to Serve</div>
+                </div>
+                <div class="vs">vs.</div>
+                <div class="side">
+                    <div class="value">$1,695</div>
+                    <div class="side-label">Avg Tuition Charged</div>
+                </div>
+            </div>
+
+            <div class="gap-callout">
+                <strong>+$142</strong> margin per camper week = <strong>tuition covers costs</strong>
+            </div>
+        </div>
+
+        <div class="story-box">
+            <h3>What This Number Tells You</h3>
+            <p>
+                Camp Downer's tiered pricing model is working. At $1,695 average tuition vs. $1,553 true cost,
+                the camp is financially sustainable without requiring fundraising to cover operations. The $142/week
+                margin funds scholarships, builds reserves, and invests in facilities. <strong>This is the opposite
+                of most camps</strong>, where cost exceeds tuition and the gap becomes the fundraising story.
+            </p>
+        </div>
+
+        <!-- Revenue Summary -->
+        <div class="section">
+            <h3 class="section-title">Revenue at a Glance</h3>
+
+            <div class="revenue-grid">
+                <div class="revenue-card gross">
+                    <div class="value">$739,025</div>
+                    <div class="label">Gross Enrolled Revenue</div>
+                </div>
+                <div class="revenue-card scholarships">
+                    <div class="value">-$27,360</div>
+                    <div class="label">Scholarships Awarded</div>
+                </div>
+                <div class="revenue-card net">
+                    <div class="value">$711,665</div>
+                    <div class="label">Net Revenue</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expense Breakdown - What Values Are We Showing -->
+        <div class="section">
+            <h3 class="section-title">Where the Money Goes (Budget = Values)</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                "Your spending reveals what you actually care about, not what you say you care about."
+            </p>
+
+            <div class="expense-breakdown">
+                <div class="expense-card staffing">
+                    <div class="percent">39%</div>
+                    <div class="category">Staffing</div>
+                    <div class="amount">$255,400</div>
+                    <div class="insight">People-first culture</div>
+                </div>
+                <div class="expense-card program">
+                    <div class="percent">30%</div>
+                    <div class="category">Programs & Food</div>
+                    <div class="amount">$195,950</div>
+                    <div class="insight">Camper experience</div>
+                </div>
+                <div class="expense-card facilities">
+                    <div class="percent">11%</div>
+                    <div class="category">Facilities</div>
+                    <div class="amount">$73,500</div>
+                    <div class="insight">State-owned land keeps this low</div>
+                </div>
+                <div class="expense-card admin">
+                    <div class="percent">20%</div>
+                    <div class="category">Admin & Insurance</div>
+                    <div class="amount">$127,590</div>
+                    <div class="insight">Necessary overhead</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quote">
+            "Neither is right or wrong. Both are choices. The question is: are they the choices you meant to make?"
+        </div>
+
+        <!-- Tier Distribution -->
+        <div class="tier-section">
+            <h3 class="section-title" style="border-bottom: none; margin-bottom: 15px;">Pricing Tier Distribution</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                How families chose to pay — this reveals community capacity and values alignment.
+            </p>
+
+            <div class="tier-bar-container">
+                <div class="tier-bar">
+                    <div class="tier-segment a" style="width: 29.7%;">30% Tier A</div>
+                    <div class="tier-segment b" style="width: 36.2%;">36% Tier B</div>
+                    <div class="tier-segment c" style="width: 34.1%;">34% Tier C</div>
+                </div>
+            </div>
+
+            <div class="tier-legend">
+                <div class="tier-legend-item">
+                    <div class="tier-dot" style="background: #3498db;"></div>
+                    <span><strong>Tier A:</strong> Growth rate ($219K)</span>
+                </div>
+                <div class="tier-legend-item">
+                    <div class="tier-dot" style="background: #9b59b6;"></div>
+                    <span><strong>Tier B:</strong> Break-even ($268K)</span>
+                </div>
+                <div class="tier-legend-item">
+                    <div class="tier-dot" style="background: #e67e22;"></div>
+                    <span><strong>Tier C:</strong> Accessible ($250K)</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; font-size: 14px;">
+                <strong>Insight:</strong> Nearly even thirds across tiers shows the model is working as designed.
+                Families who can pay more do (30% Tier A), while those who need accessibility have it (34% Tier C).
+                The majority (36%) choose the middle path.
+            </div>
+        </div>
+
+        <!-- Session Revenue Table -->
+        <div class="section">
+            <h3 class="section-title">Revenue by Session</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Session</th>
+                        <th class="number">Revenue</th>
+                        <th class="number">% of Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Session 3 (2-week)</strong></td>
+                        <td class="number">$154,330</td>
+                        <td class="number">20.9%</td>
+                    </tr>
+                    <tr>
+                        <td>CIT II</td>
+                        <td class="number">$47,850</td>
+                        <td class="number">6.5%</td>
+                    </tr>
+                    <tr>
+                        <td>Sessions 4-7 (1-week each)</td>
+                        <td class="number">$365,250</td>
+                        <td class="number">49.4%</td>
+                    </tr>
+                    <tr>
+                        <td>Sessions 1-2 (1-week each)</td>
+                        <td class="number">$169,690</td>
+                        <td class="number">23.0%</td>
+                    </tr>
+                    <tr>
+                        <td>Other</td>
+                        <td class="number">$1,905</td>
+                        <td class="number">0.3%</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>Total</strong></td>
+                        <td class="number"><strong>$739,025</strong></td>
+                        <td class="number"><strong>100%</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bottom Line -->
+        <div class="story-box" style="background: #e8f6e8; border-left-color: #27ae60;">
+            <h3 style="color: #155724;">The Bottom Line</h3>
+            <p>
+                <strong>Projected surplus: $59,225 (8.3% margin)</strong><br><br>
+                Camp Downer is in a healthy financial position. The tiered pricing model covers true costs,
+                the scholarship program is sustainable through operations, and reserves are strong.
+                The key questions going forward: Should we adjust pricing for 2027? How do we want to
+                deploy the surplus — reserves, facilities, or expanded scholarships?
+            </p>
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="Financial-Dashboard-v2.html">One Page Dashboard</a>
+            <a href="Cash-Flow-v2.html">Cash Flow Timing</a>
+            <a href="Revenue-Analysis-Interactive.html">Original Revenue Analysis</a>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center; color: #999; font-size: 12px;">
+            Camp Downer, Inc. | May 2026 Board Meeting | Enrollment data as of April 27, 2026
+        </footer>
+    </div>
+</body>
+</html>

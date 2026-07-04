@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Revenue & Cost Analysis</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #1a1a2e;
+            padding-bottom: 20px;
+        }
+
+        h1 { font-size: 24px; color: #1a1a2e; margin-bottom: 5px; }
+        .subtitle { color: #666; font-size: 14px; }
+
+        .hero-metric {
+            background: linear-gradient(135deg, #1a5f4a 0%, #2e8b6e 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .hero-metric .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .hero-metric .comparison {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .hero-metric .side { text-align: center; }
+
+        .hero-metric .value {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .hero-metric .side-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .hero-metric .vs {
+            font-size: 24px;
+            font-weight: 300;
+            opacity: 0.7;
+        }
+
+        .hero-metric .gap-callout {
+            background: rgba(255,255,255,0.15);
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .hero-metric .gap-callout strong { font-size: 20px; }
+
+        .story-box {
+            background: #f8f9fa;
+            border-left: 4px solid #1a5f4a;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .story-box h3 {
+            color: #1a5f4a;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .story-box p {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .section { margin: 40px 0; }
+
+        .section-title {
+            font-size: 18px;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .expense-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .expense-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border-top: 4px solid #667eea;
+        }
+
+        .expense-card.staffing { border-top-color: #27ae60; }
+        .expense-card.program { border-top-color: #3498db; }
+        .expense-card.facilities { border-top-color: #e67e22; }
+        .expense-card.admin { border-top-color: #9b59b6; }
+
+        .expense-card .percent {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .expense-card .category {
+            font-size: 14px;
+            color: #666;
+            margin: 8px 0;
+        }
+
+        .expense-card .amount {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .expense-card .insight {
+            font-size: 12px;
+            color: #27ae60;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .revenue-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .revenue-card {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .revenue-card.gross { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; }
+        .revenue-card.scholarships { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; }
+        .revenue-card.net { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; }
+
+        .revenue-card .value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .revenue-card .label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .tier-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .tier-bar-container { margin: 20px 0; }
+
+        .tier-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tier-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .tier-segment.a { background: #3498db; }
+        .tier-segment.b { background: #9b59b6; }
+        .tier-segment.c { background: #e67e22; }
+
+        .tier-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tier-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .tier-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .quote {
+            background: #1a1a2e;
+            color: white;
+            padding: 25px 35px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+            font-style: italic;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #1a1a2e;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover { background: #f8f9fa; }
+
+        .total-row {
+            font-weight: 600;
+            background: #f0f0f0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .nav-links a {
+            padding: 8px 16px;
+            background: #1a1a2e;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover { background: #2c3e50; }
+
+        @media (max-width: 768px) {
+            .expense-breakdown { grid-template-columns: 1fr; }
+            .revenue-grid { grid-template-columns: 1fr; }
+            .hero-metric .comparison { flex-direction: column; gap: 20px; }
+            .hero-metric .value { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Summer 2026: Revenue & Cost Analysis</h1>
+            <p class="subtitle">Camp Downer, Inc. | July 11, 2026 Board Meeting</p>
+        </header>
+
+        <!-- THE ONE METRIC -->
+        <div class="hero-metric">
+            <div class="label">The One Metric You Must Know</div>
+            <h2 style="font-size: 22px; font-weight: 400; margin-bottom: 20px;">Cost Per Camper Week</h2>
+
+            <div class="comparison">
+                <div class="side">
+                    <div class="value">$586</div>
+                    <div class="side-label">True Cost to Serve</div>
+                </div>
+                <div class="vs">vs.</div>
+                <div class="side">
+                    <div class="value">$648</div>
+                    <div class="side-label">Avg Net Tuition</div>
+                </div>
+            </div>
+
+            <div class="gap-callout">
+                <strong>+$62</strong> margin per camper week = <strong>tuition covers costs</strong>
+            </div>
+        </div>
+
+        <div class="story-box">
+            <h3>What This Number Tells You</h3>
+            <p>
+                Camp Downer's tiered pricing model covers its costs. At $648 average net tuition (after scholarships) vs.
+                $586 true cost per camper week, tuition alone keeps the camp sustainable — no fundraising required to break
+                even. The ~$62/week margin (about 10%) builds reserves and funds facility investment. Across the 1,113
+                camper weeks delivered this summer, that scales to the roughly $68K surplus projected for the year.
+            </p>
+        </div>
+
+        <div class="story-box" style="border-left-color: #3498db;">
+            <h3 style="color: #2980b9;">How "Cost Per Camper Week" Is Calculated</h3>
+            <p style="margin-bottom: 12px;">
+                A <strong>camper week</strong> is one camper attending for one week. Camp Downer delivered
+                <strong>1,113 camper weeks</strong> in Summer 2026 — from 968 session registrations, counting the two-week
+                Session 3 (145 campers) as two weeks each: 823 one-week registrations + (145 × 2) = 1,113.
+            </p>
+            <p style="margin-bottom: 12px;">
+                <strong>True cost per camper week</strong> = total annual operating budget ÷ total camper weeks<br>
+                = $652,440 ÷ 1,113 ≈ <strong>$586</strong><br>
+                <span style="font-size: 13px; color: #666;">This spreads <em>every</em> operating cost — staff, food, programs, facilities, admin, and insurance — evenly across all the weeks of camp delivered. It's the all-in cost to serve one camper for one week.</span>
+            </p>
+            <p>
+                <strong>Average net tuition per camper week</strong> = net tuition revenue ÷ total camper weeks<br>
+                = $720,825 ÷ 1,113 ≈ <strong>$648</strong>
+                <span style="font-size: 13px; color: #666;">— net tuition is the $748,185 enrolled less $27,360 in scholarships, blended across the three pricing tiers.</span>
+            </p>
+            <p style="margin-top: 12px; font-size: 13px; color: #666;">
+                Because average net tuition ($648) sits above true cost ($586), tuition alone covers operations — the
+                <strong>+$62/week</strong> gap (about 10%) builds reserves and funds facility investment. Camper-week count
+                is from the final Summer 2026 registration summary.
+            </p>
+        </div>
+
+        <!-- Revenue Summary -->
+        <div class="section">
+            <h3 class="section-title">Revenue at a Glance (Final Enrollment)</h3>
+
+            <div class="revenue-grid">
+                <div class="revenue-card gross">
+                    <div class="value">$748,185</div>
+                    <div class="label">Gross Enrolled Revenue</div>
+                </div>
+                <div class="revenue-card scholarships">
+                    <div class="value">-$27,360</div>
+                    <div class="label">Scholarships Awarded</div>
+                </div>
+                <div class="revenue-card net">
+                    <div class="value">$720,825</div>
+                    <div class="label">Net Enrolled Revenue</div>
+                </div>
+            </div>
+            <p style="color: #666; font-size: 13px; text-align: center; margin-top: 10px;">
+                Final Summer 2026 enrollment is up $9,160 (+1.2%) from the $739,025 projected at the May meeting.
+            </p>
+        </div>
+
+        <!-- Expense Breakdown -->
+        <div class="section">
+            <h3 class="section-title">Where the Money Goes</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                The full-year expense budget, grouped into four categories. Staffing and program/food together account for
+                roughly 70% of spending — a reflection of where the camper experience is actually delivered.
+            </p>
+
+            <div class="expense-breakdown">
+                <div class="expense-card staffing">
+                    <div class="percent">39%</div>
+                    <div class="category">Staffing</div>
+                    <div class="amount">$255,400</div>
+                    <div class="insight">People-first culture</div>
+                </div>
+                <div class="expense-card program">
+                    <div class="percent">30%</div>
+                    <div class="category">Programs & Food</div>
+                    <div class="amount">$195,950</div>
+                    <div class="insight">Camper experience</div>
+                </div>
+                <div class="expense-card facilities">
+                    <div class="percent">11%</div>
+                    <div class="category">Facilities</div>
+                    <div class="amount">$73,500</div>
+                    <div class="insight">State-owned land keeps this low</div>
+                </div>
+                <div class="expense-card admin">
+                    <div class="percent">20%</div>
+                    <div class="category">Admin & Insurance</div>
+                    <div class="amount">$127,590</div>
+                    <div class="insight">Necessary overhead</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier Distribution -->
+        <div class="tier-section">
+            <h3 class="section-title" style="border-bottom: none; margin-bottom: 15px;">Pricing Tier Distribution</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                How families chose to pay across all seven sessions — this reveals community capacity and values alignment.
+            </p>
+
+            <div class="tier-bar-container">
+                <div class="tier-bar">
+                    <div class="tier-segment a" style="width: 30.2%;">30% Tier A</div>
+                    <div class="tier-segment b" style="width: 36.2%;">36% Tier B</div>
+                    <div class="tier-segment c" style="width: 33.6%;">34% Tier C</div>
+                </div>
+            </div>
+
+            <div class="tier-legend">
+                <div class="tier-legend-item">
+                    <div class="tier-dot" style="background: #3498db;"></div>
+                    <span><strong>Tier A:</strong> Growth rate ($225K)</span>
+                </div>
+                <div class="tier-legend-item">
+                    <div class="tier-dot" style="background: #9b59b6;"></div>
+                    <span><strong>Tier B:</strong> Break-even ($270K)</span>
+                </div>
+                <div class="tier-legend-item">
+                    <div class="tier-dot" style="background: #e67e22;"></div>
+                    <span><strong>Tier C:</strong> Accessible ($251K)</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; font-size: 14px;">
+                <strong>Insight:</strong> Nearly even thirds across tiers — essentially unchanged from spring — shows the model is
+                working as designed. Families who can pay more do (30% Tier A), those who need accessibility have it (34% Tier C),
+                and the plurality (36%) choose the middle path.
+            </div>
+        </div>
+
+        <!-- Tier Mix by Session -->
+        <div class="section">
+            <h3 class="section-title">Tier Mix by Session</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                Raw revenue by session mostly reflects length and price — the two-week Session 3 leads simply because it costs
+                about double a one-week session, not because demand is higher. The more revealing view is the
+                <strong>tier mix within each session</strong>: how many families chose the growth (A), break-even (B), or
+                accessible (C) rate.
+            </p>
+
+            <div class="tier-legend" style="justify-content: flex-start; margin: 15px 0 20px;">
+                <div class="tier-legend-item"><div class="tier-dot" style="background:#3498db;"></div><span><strong>Tier A</strong> — Growth</span></div>
+                <div class="tier-legend-item"><div class="tier-dot" style="background:#9b59b6;"></div><span><strong>Tier B</strong> — Break-even</span></div>
+                <div class="tier-legend-item"><div class="tier-dot" style="background:#e67e22;"></div><span><strong>Tier C</strong> — Accessible</span></div>
+            </div>
+
+            <div style="margin: 14px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                    <span><strong>Session 1</strong> <span style="color:#888;">(1-week)</span></span>
+                    <span style="color: #888;">$84,900</span>
+                </div>
+                <div class="tier-bar" style="height: 32px;">
+                    <div class="tier-segment a" style="width: 24.8%;">25%</div>
+                    <div class="tier-segment b" style="width: 44.2%;">44%</div>
+                    <div class="tier-segment c" style="width: 31.0%;">31%</div>
+                </div>
+            </div>
+
+            <div style="margin: 14px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                    <span><strong>Session 2</strong> <span style="color:#888;">(1-week)</span></span>
+                    <span style="color: #888;">$89,920</span>
+                </div>
+                <div class="tier-bar" style="height: 32px;">
+                    <div class="tier-segment a" style="width: 30.4%;">30%</div>
+                    <div class="tier-segment b" style="width: 37.3%;">37%</div>
+                    <div class="tier-segment c" style="width: 32.4%;">32%</div>
+                </div>
+            </div>
+
+            <div style="margin: 14px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                    <span><strong>Session 3</strong> <span style="color:#888;">(2-week)</span></span>
+                    <span style="color: #888;">$205,150</span>
+                </div>
+                <div class="tier-bar" style="height: 32px;">
+                    <div class="tier-segment a" style="width: 30.8%;">31%</div>
+                    <div class="tier-segment b" style="width: 30.0%;">30%</div>
+                    <div class="tier-segment c" style="width: 39.2%;">39%</div>
+                </div>
+            </div>
+
+            <div style="margin: 14px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                    <span><strong>Session 4</strong> <span style="color:#888;">(1-week)</span></span>
+                    <span style="color: #888;">$90,150</span>
+                </div>
+                <div class="tier-bar" style="height: 32px;">
+                    <div class="tier-segment a" style="width: 28.6%;">29%</div>
+                    <div class="tier-segment b" style="width: 37.9%;">38%</div>
+                    <div class="tier-segment c" style="width: 33.5%;">34%</div>
+                </div>
+            </div>
+
+            <div style="margin: 14px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                    <span><strong>Session 5</strong> <span style="color:#888;">(1-week)</span></span>
+                    <span style="color: #888;">$91,480</span>
+                </div>
+                <div class="tier-bar" style="height: 32px;">
+                    <div class="tier-segment a" style="width: 35.8%;">36%</div>
+                    <div class="tier-segment b" style="width: 29.3%;">29%</div>
+                    <div class="tier-segment c" style="width: 34.9%;">35%</div>
+                </div>
+            </div>
+
+            <div style="margin: 14px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                    <span><strong>Session 6</strong> <span style="color:#888;">(1-week)</span></span>
+                    <span style="color: #888;">$93,690</span>
+                </div>
+                <div class="tier-bar" style="height: 32px;">
+                    <div class="tier-segment a" style="width: 31.6%;">32%</div>
+                    <div class="tier-segment b" style="width: 45.1%;">45%</div>
+                    <div class="tier-segment c" style="width: 23.3%;">23%</div>
+                </div>
+            </div>
+
+            <div style="margin: 14px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                    <span><strong>Session 7</strong> <span style="color:#888;">(1-week)</span></span>
+                    <span style="color: #888;">$90,710</span>
+                </div>
+                <div class="tier-bar" style="height: 32px;">
+                    <div class="tier-segment a" style="width: 28.4%;">28%</div>
+                    <div class="tier-segment b" style="width: 37.7%;">38%</div>
+                    <div class="tier-segment c" style="width: 34.0%;">34%</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 14px;">
+                <strong>What stands out:</strong> Session 6 has the richest mix (45% Tier B, just 23% Tier C), while the longer,
+                pricier Session 3 has the highest accessible-rate share (39% Tier C) — consistent with families choosing the
+                lower tier for a bigger two-week commitment. Across the rest of the summer the mix is fairly steady, which
+                suggests the tiered model spreads evenly rather than concentrating financial need in any single session.
+            </div>
+
+            <table style="margin-top: 25px;">
+                <thead>
+                    <tr>
+                        <th>Session</th>
+                        <th class="number">Tier A</th>
+                        <th class="number">Tier B</th>
+                        <th class="number">Tier C</th>
+                        <th class="number">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Session 1 (1-wk)</td><td class="number">$21,060</td><td class="number">$37,520</td><td class="number">$26,320</td><td class="number">$84,900</td></tr>
+                    <tr><td>Session 2 (1-wk)</td><td class="number">$27,300</td><td class="number">$33,500</td><td class="number">$29,120</td><td class="number">$89,920</td></tr>
+                    <tr><td>Session 3 (2-wk)</td><td class="number">$63,140</td><td class="number">$61,490</td><td class="number">$80,520</td><td class="number">$205,150</td></tr>
+                    <tr><td>Session 4 (1-wk)</td><td class="number">$25,740</td><td class="number">$34,170</td><td class="number">$30,240</td><td class="number">$90,150</td></tr>
+                    <tr><td>Session 5 (1-wk)</td><td class="number">$32,760</td><td class="number">$26,800</td><td class="number">$31,920</td><td class="number">$91,480</td></tr>
+                    <tr><td>Session 6 (1-wk)</td><td class="number">$29,640</td><td class="number">$42,210</td><td class="number">$21,840</td><td class="number">$93,690</td></tr>
+                    <tr><td>Session 7 (1-wk)</td><td class="number">$25,740</td><td class="number">$34,170</td><td class="number">$30,800</td><td class="number">$90,710</td></tr>
+                    <tr class="total-row"><td><strong>Total</strong></td><td class="number"><strong>$225,380</strong></td><td class="number"><strong>$269,860</strong></td><td class="number"><strong>$250,760</strong></td><td class="number"><strong>$746,000</strong></td></tr>
+                </tbody>
+            </table>
+            <p style="font-size: 12px; color: #888; margin-top: 8px;">Excludes $2,185 in unallocated camp revenue. Session 3 (2-week) includes CIT tracks.</p>
+        </div>
+
+        <!-- Bottom Line -->
+        <div class="story-box" style="background: #e8f6e8; border-left-color: #27ae60;">
+            <h3 style="color: #155724;">The Bottom Line</h3>
+            <p>
+                <strong>Projected surplus: ~$68,385 (9.5% margin)</strong><br><br>
+                Camp Downer is in a healthy financial position, and stronger than projected in the spring. The tiered pricing
+                model covers true costs, the scholarship program is sustainable through operations, and reserves are strong.
+            </p>
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="Financial-Dashboard.html">One Page Dashboard</a>
+            <a href="Budget-vs-Actuals-Interactive.html">Budget Details</a>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center; color: #999; font-size: 12px;">
+            Camp Downer, Inc. | July 11, 2026 Board Meeting | Enrollment data: Summer 2026 (Accrual Basis), final as of July 3, 2026
+        </footer>
+    </div>
+</body>
+</html>

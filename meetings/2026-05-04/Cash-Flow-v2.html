@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Cash Flow Timing</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quote-box {
+            background: #c0392b;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+            font-style: italic;
+            font-size: 18px;
+        }
+
+        .chart-section {
+            margin: 40px 0;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            border-left: 2px solid #333;
+            border-bottom: 2px solid #333;
+            margin: 20px 0 40px 40px;
+        }
+
+        .y-axis-label {
+            position: absolute;
+            left: -45px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .bar-group {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 100%;
+            padding: 0 10px;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+        }
+
+        .bar {
+            width: 40px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .bar.high { background: linear-gradient(180deg, #27ae60 0%, #2ecc71 100%); }
+        .bar.medium { background: linear-gradient(180deg, #f39c12 0%, #e67e22 100%); }
+        .bar.danger { background: linear-gradient(180deg, #c0392b 0%, #e74c3c 100%); }
+
+        .bar-label {
+            font-size: 10px;
+            color: white;
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        .month-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .danger-zone {
+            position: absolute;
+            bottom: 0;
+            height: 60px;
+            background: rgba(192, 57, 43, 0.1);
+            border-top: 2px dashed #c0392b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .danger-zone-label {
+            color: #c0392b;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+
+        .insight-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .insight-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .insight-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .insight-card.warning {
+            border-left-color: #f39c12;
+        }
+
+        .insight-card h4 {
+            font-size: 13px;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .insight-card p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .callout {
+            background: #fff3cd;
+            border-left: 4px solid #f39c12;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .callout p {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .nav-links a {
+            padding: 8px 16px;
+            background: #1a1a2e;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover { background: #2c3e50; }
+
+        @media (max-width: 768px) {
+            .insight-grid { grid-template-columns: 1fr; }
+            .bar-wrapper { width: 45px; }
+            .bar { width: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cash Flow: The Truth Teller</h1>
+            <p class="subtitle">Camp Downer | May 2026 Board Meeting</p>
+        </header>
+
+        <div class="quote-box">
+            "You can be profitable on paper and still run out of cash."
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-title">Illustrative Cash Position Throughout the Year</div>
+
+            <div class="chart-container">
+                <!-- Y-axis labels -->
+                <span class="y-axis-label" style="top: 0;">$900K</span>
+                <span class="y-axis-label" style="top: 33%;">$600K</span>
+                <span class="y-axis-label" style="top: 66%;">$300K</span>
+                <span class="y-axis-label" style="bottom: -5px;">$0</span>
+
+                <!-- Danger zone indicator -->
+                <div class="danger-zone" style="left: calc(58.3% + 10px); right: calc(16.7% + 10px);">
+                    <span class="danger-zone-label">Typical Danger Zone</span>
+                </div>
+
+                <div class="bar-group">
+                    <div class="bar-wrapper">
+                        <div class="bar high" style="height: 75%;"><span class="bar-label">$675K</span></div>
+                        <span class="month-label">Jan</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar high" style="height: 80%;"><span class="bar-label">$720K</span></div>
+                        <span class="month-label">Feb</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar high" style="height: 85%;"><span class="bar-label">$765K</span></div>
+                        <span class="month-label">Mar</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar high" style="height: 95%;"><span class="bar-label">$855K</span></div>
+                        <span class="month-label">Apr</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar high" style="height: 100%;"><span class="bar-label">$900K</span></div>
+                        <span class="month-label">May</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar high" style="height: 78%;"><span class="bar-label">$700K</span></div>
+                        <span class="month-label">Jun</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar medium" style="height: 56%;"><span class="bar-label">$500K</span></div>
+                        <span class="month-label">Jul</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar medium" style="height: 44%;"><span class="bar-label">$400K</span></div>
+                        <span class="month-label">Aug</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar danger" style="height: 39%;"><span class="bar-label">$350K</span></div>
+                        <span class="month-label">Sep</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar danger" style="height: 36%;"><span class="bar-label">$325K</span></div>
+                        <span class="month-label">Oct</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar danger" style="height: 33%;"><span class="bar-label">$300K</span></div>
+                        <span class="month-label">Nov</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar medium" style="height: 44%;"><span class="bar-label">$400K</span></div>
+                        <span class="month-label">Dec</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #27ae60;"></div>
+                    <span>Deposits arriving (Jan-May)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #f39c12;"></div>
+                    <span>Summer burn (Jun-Aug)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #c0392b;"></div>
+                    <span>Danger zone (Sep-Nov)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-section">
+            <div class="insight-title">What This Means for Camp Downer</div>
+            <div class="insight-grid">
+                <div class="insight-card">
+                    <h4>Current Position: Strong</h4>
+                    <p>$855K cash on hand as of April 27. This is peak cash season as registration payments flow in before summer expenses begin.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>Summer Burn Rate</h4>
+                    <p>Expect ~$200K/month in expenses during June-August (staff salaries, food service, programs). Cash will decline rapidly.</p>
+                </div>
+                <div class="insight-card warning">
+                    <h4>The Danger Zone</h4>
+                    <p>Sept-Nov: Camp revenue stops but fixed costs continue (insurance, utilities, year-round staff). This is when most camps feel the pinch.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>Recovery</h4>
+                    <p>December: Early bird registrations for next summer begin. Cash starts rebuilding for the next cycle.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-title">Key Question for the Board</div>
+            <p><strong>Do you know your lowest cash month?</strong> For most summer camps, it's October or November. Camp Downer's strong reserves ($855K starting) should weather this well, but it's worth tracking monthly to ensure the projection holds.</p>
+        </div>
+
+        <div class="insight-section" style="background: #e8f6e8; border-left: 4px solid #27ae60;">
+            <div class="insight-title" style="color: #155724;">Camp Downer's Safety Net</div>
+            <p style="font-size: 14px; color: #333; margin-bottom: 15px;">
+                Even at the projected low point (~$300K in November), Camp Downer would have:
+            </p>
+            <ul style="margin-left: 20px; font-size: 14px; color: #333;">
+                <li><strong>5+ months</strong> of operating reserves (at ~$54K/month average)</li>
+                <li><strong>$531K in investments</strong> at Fidelity (accessible if truly needed)</li>
+                <li><strong>No debt</strong> — only routine monthly payables</li>
+            </ul>
+            <p style="font-size: 14px; color: #333; margin-top: 15px;">
+                <strong>Bottom line:</strong> Cash timing is healthy. The organization can survive a bad summer.
+            </p>
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="Financial-Dashboard-v2.html">One Page Dashboard</a>
+            <a href="Financial-Dashboard.html">Original Dashboard</a>
+            <a href="Budget-vs-Actuals-Interactive.html">Budget Details</a>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center; color: #999; font-size: 12px;">
+            Camp Downer, Inc. | May 2026 Board Meeting<br>
+            <em>Cash flow projections are illustrative based on typical camp seasonality</em>
+        </footer>
+    </div>
+</body>
+</html>
