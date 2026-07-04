@@ -1,3 +1,6 @@
 .DS_Store
 .vercel
 .staticrypt.json
+
+# Source financial & registration documents (contain sensitive data) — kept local only
+source-documents/
