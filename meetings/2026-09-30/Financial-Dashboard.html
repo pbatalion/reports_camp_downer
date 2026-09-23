@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Financial Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1a5276 0%, #2e86de 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* Five Numbers hero band */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-top: 4px solid #3498db;
+            text-align: center;
+        }
+
+        .kpi-card.green { border-top-color: #27ae60; }
+        .kpi-card.blue { border-top-color: #2e86de; }
+        .kpi-card.purple { border-top-color: #8e44ad; }
+        .kpi-card.orange { border-top-color: #e67e22; }
+        .kpi-card.teal { border-top-color: #16a085; }
+
+        .kpi-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1.1;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            color: #555;
+            margin-top: 8px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .card-icon.green { background: #d5f5e3; }
+        .card-icon.blue { background: #d6eaf8; }
+        .card-icon.purple { background: #e8daef; }
+        .card-icon.orange { background: #fdebd0; }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .card-change {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .card-change.positive { color: #27ae60; }
+        .card-change.negative { color: #e74c3c; }
+        .card-change.neutral { color: #7f8c8d; }
+
+        .wide-card {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 768px) {
+            .wide-card { grid-column: span 1; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+
+        .section-title {
+            color: white;
+            font-size: 18px;
+            margin: 30px 0 15px;
+            padding-left: 15px;
+            border-left: 4px solid rgba(255,255,255,0.5);
+        }
+
+        .progress-section {
+            margin: 20px 0;
+        }
+
+        .progress-item {
+            margin: 15px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: #ecf0f1;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s;
+        }
+
+        .progress-fill.green { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+        .progress-fill.yellow { background: linear-gradient(90deg, #f1c40f, #f39c12); }
+        .progress-fill.red { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .metric-row:last-child { border-bottom: none; }
+
+        .metric-label { color: #7f8c8d; font-size: 14px; }
+        .metric-value { font-weight: 600; font-size: 14px; }
+
+        .ratio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .ratio-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .ratio-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #27ae60;
+        }
+
+        .ratio-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .nav-card {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        .nav-card-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .nav-card-desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            margin-top: 40px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>Camp Downer Financial Dashboard</h1>
+            <p>September 30, 2026 Board Meeting | Data as of September 22, 2026 | Season Complete</p>
+        </header>
+
+        <!-- FIVE NUMBERS -->
+        <div class="kpi-grid">
+            <div class="kpi-card green">
+                <div class="kpi-label">Net Income (YTD)</div>
+                <div class="kpi-value">$154,350</div>
+                <div class="kpi-sub">budget planned &minus;$35,738</div>
+            </div>
+            <div class="kpi-card blue">
+                <div class="kpi-label">Cash on Hand</div>
+                <div class="kpi-value">$633K</div>
+                <div class="kpi-sub">plus $570K invested</div>
+            </div>
+            <div class="kpi-card teal">
+                <div class="kpi-label">Cost / Camper Week</div>
+                <div class="kpi-value">$586</div>
+                <div class="kpi-sub">vs. $649 net tuition (+$63)</div>
+            </div>
+            <div class="kpi-card orange">
+                <div class="kpi-label">Summer 2026 Enrollment</div>
+                <div class="kpi-value">$749K</div>
+                <div class="kpi-sub">968 campers, 98.5% of capacity</div>
+            </div>
+            <div class="kpi-card purple">
+                <div class="kpi-label">Projected Year-End</div>
+                <div class="kpi-value">~$126K</div>
+                <div class="kpi-sub">if off-season work is deferred</div>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 15px; padding: 20px 25px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-left: 5px solid #27ae60;">
+            <strong style="color: #2c3e50;">The season is closed.</strong>
+            <span style="color: #555; font-size: 14px;">
+                All seven sessions have run, tuition is collected, and summer costs are paid. Net revenue stands at
+                $154,350 against a budget that planned for a $35,738 deficit. Expenses finished 12% under plan, and the
+                registration line sits above budget as it does every year, because the budget is built on a single rate
+                rather than the three pricing tiers. About $77,900 of budget remains unspent, but the Directors' Annual
+                Report explains most of it: some was spent and capitalised to the balance sheet, and some is still to come.
+            </span>
+        </div>
+
+        <div style="background: white; border-radius: 15px; padding: 20px 25px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-left: 5px solid #8e44ad;">
+            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 10px;">How the ~$125K year-end figure is reached</div>
+            <div style="font-size: 13px; color: #555; line-height: 1.9;">
+                Net revenue today is <strong>$154,350</strong>. The expense budget has <strong>$77,900</strong> unspent.
+                The Directors' Annual Report accounts for it line by line, and most of it is <em>not</em> money that will
+                simply be saved:
+            </div>
+            <div style="margin-top: 12px; font-size: 13px;">
+                <div class="metric-row">
+                    <span class="metric-label">Off-season projects and equipment (spent, but capitalised to the balance sheet)</span>
+                    <span class="metric-value" style="color: #7f8c8d;">$16,579 already spent</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Dining service (under only because of $14,289 of 2024&ndash;25 credits)</span>
+                    <span class="metric-value" style="color: #7f8c8d;">$13,824 not a saving</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Staff salaries (year-round director role; expected to finish only ~$5,000 under)</span>
+                    <span class="metric-value">~$17,836 still to come</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Admin, utilities, payroll fees, director line (expected to meet or exceed budget)</span>
+                    <span class="metric-value">~$11,515 still to come</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label"><strong>Total realistically still to spend</strong></span>
+                    <span class="metric-value"><strong>~$29,350</strong></span>
+                </div>
+            </div>
+            <div style="margin-top: 12px; padding: 10px; background: #f3e8fd; border-radius: 8px; font-size: 13px;">
+                $154,350 less about $29,350 gives a year-end result near <strong>$125,000</strong>, and closer to
+                <strong>$113,000</strong> if year-end accounting and insurance also land in full. Any Summer 2027 deposits
+                received before December 31 would add to it, as would a 2026 dining credit if Fresh Picks issues one.
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 15px; padding: 20px 25px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-left: 5px solid #c0392b;">
+            <strong style="color: #2c3e50;">One caveat on the expense figures.</strong>
+            <span style="color: #555; font-size: 14px;">
+                The Directors' Annual Report notes that receipt entry into QuickBooks was not kept fully up to date over
+                the summer, and that a backlog was handed over when the administrative assistant changed at the end of the
+                season. Expenses here may therefore be slightly understated, which would reduce the surplus. Confirming the
+                backlog has been cleared is worth doing before these figures are treated as final.
+            </span>
+        </div>
+
+        <h2 class="section-title">Balance Sheet Snapshot</h2>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Total Assets</span>
+                    <div class="card-icon green">&#128202;</div>
+                </div>
+                <div class="card-value">$1.77M</div>
+                <div class="card-change neutral">Everything we own</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Cash Position</span>
+                    <div class="card-icon blue">&#128181;</div>
+                </div>
+                <div class="card-value">$633K</div>
+                <div class="card-change positive">Net cash in bank accounts</div>
+                <div style="margin-top: 12px; padding: 10px; background: #ebf5fb; border-radius: 8px; font-size: 12px;">
+                    <strong>Note:</strong> Down from $714K in June as summer payroll and food were paid. The &minus;$51K prepaid-payroll entry that depressed June's figure has now cleared to zero, so this number needs no adjustment.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Investments</span>
+                    <div class="card-icon purple">&#128200;</div>
+                </div>
+                <div class="card-value">$570K</div>
+                <div class="card-change positive">+7.3% YTD 2026 (+$38.9K net)</div>
+                <div style="margin-top: 12px; padding: 10px; background: #f3e8fd; border-radius: 8px; font-size: 12px;">
+                    <strong>2026 YTD:</strong> $8,626 in dividends &amp; interest (reinvested) and $32,687 of unrealized gains. Fees: $2,415. Per the August 31 Fidelity statement.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Total Liabilities</span>
+                    <div class="card-icon orange">&#128203;</div>
+                </div>
+                <div class="card-value">$8.6K</div>
+                <div class="card-change positive">No loans or long-term debt</div>
+                <div style="margin-top: 12px; padding: 10px; background: #fef9e7; border-radius: 8px; font-size: 12px;">
+                    <strong>Breakdown:</strong> Credit card balance ($8,405) + VT Saves payroll contribution ($215). Down from $21,985 in June as seasonal purchasing was paid off.
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Year-to-Date Performance</h2>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Revenue (Cash Received)</span>
+                </div>
+                <div class="card-value" style="color: #27ae60;">$741,250</div>
+                <div class="metric-row">
+                    <span class="metric-label">Net Registrations</span>
+                    <span class="metric-value">$730,167</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Donations</span>
+                    <span class="metric-value">$6,323</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">In-Kind Donations</span>
+                    <span class="metric-value">$3,740</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Merchandise &amp; Interest</span>
+                    <span class="metric-value">$1,020</span>
+                </div>
+                <div style="margin-top: 12px; padding: 10px; background: #e8f6e8; border-radius: 8px; font-size: 12px;">
+                    <strong>Note:</strong> $776K gross registrations received. After refunds (&minus;$19K) and scholarships (&minus;$27K), net registrations are $730K. Tuition is 98.5% of all revenue. Registrations sit above the budget line because the budget is built on a single rate and does not model the pricing tiers. The season ran at 98.5% of capacity, with only 15 of 983 places unfilled.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Expenses</span>
+                </div>
+                <div class="card-value" style="color: #e74c3c;">$574,540</div>
+                <div class="metric-row">
+                    <span class="metric-label">Operations</span>
+                    <span class="metric-value">$403,013</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Finance</span>
+                    <span class="metric-value">$112,206</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Building &amp; Grounds</span>
+                    <span class="metric-value">$59,321</span>
+                </div>
+                <div style="margin-top: 12px; padding: 10px; background: #fdedec; border-radius: 8px; font-size: 12px;">
+                    <strong>Note:</strong> 88% of the annual budget spent. Staff salaries ($232,564) and dining ($115,176) are the two largest lines and both finished under budget.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Net Income (YTD)</span>
+                </div>
+                <div class="card-value" style="color: #3498db;">$154,350</div>
+                <div class="card-change neutral" style="margin-top: 15px;">
+                    A real result, not a timing artifact: the revenue is in and the summer is paid for. About $29,350 of budgeted spending is realistically still ahead, most of it the year-round director salary, which keeps accruing monthly through the off-season. The year should close near $125,000. Fall deposits for Summer 2027 would push it higher.
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Budget Progress</h2>
+
+        <div class="grid">
+            <div class="card wide-card">
+                <div class="card-header">
+                    <span class="card-title">Expense Categories vs Annual Budget</span>
+                </div>
+                <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">
+                    The season is over, so these percentages are close to final for anything summer-related. What remains is off-season work and year-end administration.
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Operations</span>
+                            <span>$403,013 / $445,350 (90%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill green" style="width: 90%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Finance</span>
+                            <span>$112,206 / $133,590 (84%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill green" style="width: 84%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Building &amp; Grounds</span>
+                            <span>$59,321 / $73,500 (81%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill yellow" style="width: 81%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span><strong>TOTAL</strong></span>
+                            <span><strong>$574,540 / $652,440 (88%)</strong></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill green" style="width: 88%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px; padding: 10px; background: #fef9e7; border-radius: 8px; font-size: 12px;">
+                    <strong>Building &amp; Grounds is misleading here:</strong> $12,575 of the apparent underspend is the Off-Season Projects line, but that work was done. The maintenance shed renovation and water system update were booked to Leasehold Improvements on the balance sheet rather than as an expense.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Financial Health Ratios</span>
+                </div>
+                <div class="ratio-grid" style="margin-bottom: 15px;">
+                    <div class="ratio-item">
+                        <div class="ratio-value">140:1</div>
+                        <div class="ratio-label">Current Ratio</div>
+                    </div>
+                    <div class="ratio-item">
+                        <div class="ratio-value">0.5%</div>
+                        <div class="ratio-label">Debt Ratio</div>
+                    </div>
+                    <div class="ratio-item">
+                        <div class="ratio-value">~1.8yr</div>
+                        <div class="ratio-label">Reserve</div>
+                    </div>
+                </div>
+                <div style="font-size: 12px; color: #555; line-height: 1.8;">
+                    <strong>Current Ratio:</strong> $ to pay each $1 owed short-term. (2:1 is healthy)<br>
+                    <strong>Debt Ratio:</strong> % of assets owed to others. (lower is better)<br>
+                    <strong>Reserve:</strong> Years we could operate on cash + investments without new revenue. (3&ndash;6 months is typical)
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Quick Stats</h2>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Scholarship Impact</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Scholarships Given (YTD)</span>
+                    <span class="metric-value">$27,360</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Scholarship Donations Received</span>
+                    <span class="metric-value">$3,250</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Scholarship Fund Balance</span>
+                    <span class="metric-value">$7,853</span>
+                </div>
+                <div style="margin-top: 10px; font-size: 12px; color: #7f8c8d;">
+                    Per Nov 2025 decision: scholarships funded from general operations. Awards were 3.7% of gross enrollment.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Cash Breakdown</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Checking</span>
+                    <span class="metric-value">$370,907</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Money Market</span>
+                    <span class="metric-value">$254,325</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Scholarship (Designated)</span>
+                    <span class="metric-value">$7,853</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Petty Cash</span>
+                    <span class="metric-value">$155</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Prepaid Payroll</span>
+                    <span class="metric-value" style="color: #27ae60;">$0</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Investment Portfolio</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Money Market (Safe)</span>
+                    <span class="metric-value">$338K (59%)</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Stock ETFs (Growth)</span>
+                    <span class="metric-value">$232K (41%)</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">2026 YTD Return</span>
+                    <span class="metric-value" style="color: #27ae60;">+7.3%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Unrealized Gain on ETFs</span>
+                    <span class="metric-value" style="color: #27ae60;">+$50,398</span>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">For Discussion</h2>
+
+        <div class="grid">
+            <div class="card wide-card">
+                <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 12px;">
+                    The 2027 budget is set at the November meeting, so the items below are flagged here for context rather than for decision today. Detail is drawn from the Directors' Annual Report, whose own finance section recommends updating budgets based on this year's over and under spending.
+                </p>
+                <ul style="margin-left: 20px; line-height: 2; font-size: 14px;">
+                    <li><strong>Where the surplus sits (November decision).</strong> The surplus accumulates in the operating account by default, which now holds $370,907 in checking alongside $254,325 in the money market. Whether to move some of it into the Fidelity portfolio is worth deciding in November rather than letting it sit by inertia. The Directors' report carries a long list of capital candidates: a replacement camp vehicle, Rinnai water heater replacement, a new freezer door, kitchen equipment and cabin rewiring.</li>
+                    <li><strong>The off-season budget was spent, just not shown as an expense.</strong> The maintenance shed renovation and water system update were capitalised to Leasehold Improvements. The Directors' report lists further work awaiting estimates: rewiring cabins, hardwiring exhaust fans, steel gas lines and draining well #3, plus the Director's Cabin roof and the Rec Hall floor.</li>
+                    <li><strong>One overage is a one-off, the other is not.</strong> The truck's $3,431 was specific repairs, and the leaf-spring job is already scheduled for May 2027. Healthcare is different: the Directors' report says these costs "continue to increase" and asks for a higher budget in 2027, alongside a request to purchase an AED.</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 class="section-title">Detailed Reports</h2>
+
+        <div style="margin-bottom: 20px;">
+            <a href="/" style="display: inline-block; padding: 10px 20px; background: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size: 14px;">&larr; Home</a>
+        </div>
+
+        <div class="nav-grid">
+            <a href="Revenue-Analysis-Interactive.html" class="nav-card">
+                <div class="nav-card-title">Revenue Analysis</div>
+                <div class="nav-card-desc">Enrollment, tiers, and cost per camper</div>
+            </a>
+            <a href="Budget-vs-Actuals-Interactive.html" class="nav-card">
+                <div class="nav-card-title">Budget vs Actuals</div>
+                <div class="nav-card-desc">Compare planned vs actual spending</div>
+            </a>
+            <a href="Statement-of-Activity-Interactive.html" class="nav-card">
+                <div class="nav-card-title">Statement of Activity</div>
+                <div class="nav-card-desc">Revenue and expenses breakdown</div>
+            </a>
+            <a href="Statement-of-Financial-Position-Interactive.html" class="nav-card">
+                <div class="nav-card-title">Balance Sheet</div>
+                <div class="nav-card-desc">Assets, liabilities, and equity</div>
+            </a>
+            <a href="Fidelity-Investment-Interactive.html" class="nav-card">
+                <div class="nav-card-title">Investment Report</div>
+                <div class="nav-card-desc">Fidelity portfolio details</div>
+            </a>
+        </div>
+
+        <footer>
+            Camp Downer, Inc. | September 30, 2026 Board Meeting<br>
+            Cash Basis Accounting | Data as of September 22, 2026 | Fidelity statement as of August 31, 2026
+        </footer>
+    </div>
+</body>
+</html>

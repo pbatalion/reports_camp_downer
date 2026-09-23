@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Downer - Fidelity Investment Report (Interactive)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+        }
+
+        h1 { font-size: 24px; color: #2c3e50; margin-bottom: 5px; }
+        h2 { font-size: 18px; color: #34495e; margin-bottom: 3px; }
+        .date { color: #7f8c8d; font-size: 14px; }
+
+        .hero-section {
+            background: linear-gradient(135deg, #1a5276 0%, #2e86de 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .hero-value { font-size: 48px; font-weight: 700; }
+
+        .hero-change { font-size: 20px; margin-top: 10px; }
+        .hero-change.positive { color: #82e0aa; }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .card.green { border-left-color: #27ae60; }
+        .card.orange { border-left-color: #f39c12; }
+        .card.red { border-left-color: #e74c3c; }
+
+        .card-value { font-size: 24px; font-weight: 700; color: #2c3e50; }
+        .card-label { font-size: 12px; color: #7f8c8d; margin-top: 5px; }
+
+        .section { margin: 30px 0; }
+        .section-title {
+            font-size: 18px;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+
+        .allocation-chart {
+            display: flex;
+            height: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .allocation-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .allocation-segment.safe { background: #3498db; }
+        .allocation-segment.growth { background: #27ae60; }
+
+        .allocation-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 15px 0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        th.number { text-align: right; }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        td.number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        tr:hover { background: #f8f9fa; }
+
+        .total-row {
+            font-weight: 600;
+            background: #f8f9fa;
+            border-top: 2px solid #34495e;
+        }
+
+        .grand-total {
+            font-weight: 700;
+            background: #2c3e50;
+            color: white;
+        }
+
+        .positive { color: #27ae60; }
+        .negative { color: #e74c3c; }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #3498db;
+            color: #2980b9;
+        }
+
+        .tooltip:hover {
+            color: #1a5276;
+            border-bottom-color: #1a5276;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 280px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .holding-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .holding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .holding-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .holding-ticker {
+            background: #3498db;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .holding-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .holding-stat { text-align: center; }
+
+        .holding-stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .holding-stat-label {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+
+        .risk-indicator {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .risk-low { background: #d5f5e3; color: #1e8449; }
+        .risk-moderate { background: #fef9e7; color: #b7950b; }
+        .risk-higher { background: #fadbd8; color: #922b21; }
+
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .nav-links a {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Camp Downer Investment Report</h1>
+            <h2>Fidelity Brokerage Account</h2>
+            <p class="date">Statement Period: August 1 &ndash; August 31, 2026 | Year-to-Date: January 1 &ndash; August 31, 2026</p>
+        </header>
+
+        <div class="hero-section">
+            <div style="font-size: 14px; opacity: 0.8;">Account Value (August 31, 2026)</div>
+            <div class="hero-value">$569,803</div>
+            <div class="hero-change positive">+$38,898 (+7.3%) year-to-date, net of fees</div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card green">
+                <div class="card-value">$530,904</div>
+                <div class="card-label">Starting Value (Jan 1)</div>
+            </div>
+            <div class="card green">
+                <div class="card-value">+$41,313</div>
+                <div class="card-label">Investment Gains (YTD)</div>
+            </div>
+            <div class="card orange">
+                <div class="card-value">-$2,415</div>
+                <div class="card-label">Fees Paid (YTD)</div>
+            </div>
+            <div class="card">
+                <div class="card-value">=$38,898</div>
+                <div class="card-label">Net Change</div>
+            </div>
+        </div>
+
+        <div class="info-box" style="background: #f8f9fa; border-left-color: #7f8c8d;">
+            <span style="background: #3498db; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">&#8505;</span>
+            <span style="margin-left: 6px;">Items in <span style="color: #3498db; font-weight: 500;">blue text</span> have more info (hover to see details).</span>
+        </div>
+
+        <div class="info-box" style="background: #f3e8fd; border-left-color: #9b59b6;">
+            <strong>Understanding the Gains:</strong> The $41,313 in year-to-date investment gains has two components:
+            <ul style="margin: 10px 0 0 20px;">
+                <li><strong>Price appreciation:</strong> $32,687 (holdings rose in value, on paper)</li>
+                <li><strong>Income earned:</strong> $8,626 (dividends and interest, automatically reinvested)</li>
+            </ul>
+            After $2,415 in management fees, the net change is +$38,898, or +7.3%. The August month alone added $7,174. Note that only the income portion is money the camp has actually received; the appreciation is unrealized and can reverse.
+        </div>
+
+        <div class="info-box">
+            <strong>Reconciles to the Balance Sheet:</strong> The $569,802.76 ending value here matches the Fidelity Investment line on the September 22 Statement of Financial Position exactly. Because this statement closes August 31, September market movement is not yet reflected in either document.
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Portfolio Allocation</h3>
+
+            <div class="allocation-chart">
+                <div class="allocation-segment safe" style="width: 59%;">Money Market 59%</div>
+                <div class="allocation-segment growth" style="width: 41%;">Stocks 41%</div>
+            </div>
+
+            <div class="allocation-legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #3498db;"></div>
+                    <span>Safe / Liquid: $337,803 (59%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #27ae60;"></div>
+                    <span>Growth / Stocks: $232,000 (41%)</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Conservative Allocation, Holding Steady:</strong> 59% sits in a money market fund and 41% in diversified stock ETFs, the same split reported in July. That is an appropriate moderately conservative mix for a nonprofit reserve fund. The allocation has been stable for two quarters, so no rebalancing is required unless the board wants to change the target itself.
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Holdings Detail (as of August 31, 2026)</h3>
+
+            <div class="holding-card" style="border-left-color: #3498db;">
+                <div class="holding-header">
+                    <div>
+                        <div class="holding-name">Fidelity Government Cash Reserves</div>
+                        <div style="font-size: 12px; color: #7f8c8d;">Money Market Fund</div>
+                    </div>
+                    <div>
+                        <span class="holding-ticker">FDRXX</span>
+                        <span class="risk-indicator risk-low">Low Risk</span>
+                    </div>
+                </div>
+                <div class="holding-details">
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$337,584</div>
+                        <div class="holding-stat-label">Market Value</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">59%</div>
+                        <div class="holding-stat-label">% of Portfolio</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">3.55%</div>
+                        <div class="holding-stat-label">Est. Yield</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value positive">$11,995</div>
+                        <div class="holding-stat-label">Est. Annual Income</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; font-size: 13px; color: #7f8c8d;">
+                    Invests in short-term government securities. Like a high-yield savings account: very safe, currently earning a 3.41% seven-day yield, and accessible on demand. This is the camp's liquidity cushion and the single largest holding.
+                </div>
+            </div>
+
+            <div class="holding-card" style="border-left-color: #27ae60;">
+                <div class="holding-header">
+                    <div>
+                        <div class="holding-name">SPDR S&amp;P 500 ETF Trust</div>
+                        <div style="font-size: 12px; color: #7f8c8d;">Tracks the 500 largest U.S. companies</div>
+                    </div>
+                    <div>
+                        <span class="holding-ticker">SPY</span>
+                        <span class="risk-indicator risk-moderate">Moderate</span>
+                    </div>
+                </div>
+                <div class="holding-details">
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$88,211</div>
+                        <div class="holding-stat-label">Market Value</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">15%</div>
+                        <div class="holding-stat-label">% of Portfolio</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value positive">+$18,376</div>
+                        <div class="holding-stat-label">Unrealized Gain (+26%)</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$865</div>
+                        <div class="holding-stat-label">Est. Annual Income</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; font-size: 13px; color: #7f8c8d;">
+                    115 shares at $767.05. The core equity holding: broad exposure to large U.S. companies at very low cost. Purchased for $69,834.
+                </div>
+            </div>
+
+            <div class="holding-card" style="border-left-color: #8e44ad;">
+                <div class="holding-header">
+                    <div>
+                        <div class="holding-name">Technology Select Sector SPDR ETF</div>
+                        <div style="font-size: 12px; color: #7f8c8d;">Concentrated in U.S. technology companies</div>
+                    </div>
+                    <div>
+                        <span class="holding-ticker">XLK</span>
+                        <span class="risk-indicator risk-higher">Higher Risk</span>
+                    </div>
+                </div>
+                <div class="holding-details">
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$54,085</div>
+                        <div class="holding-stat-label">Market Value</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">9%</div>
+                        <div class="holding-stat-label">% of Portfolio</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value positive">+$19,272</div>
+                        <div class="holding-stat-label">Unrealized Gain (+55%)</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$230</div>
+                        <div class="holding-stat-label">Est. Annual Income</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; font-size: 13px; color: #7f8c8d;">
+                    290 shares at $186.50. The best performer in the portfolio, up 55% on a $34,813 cost basis, and also the most concentrated single-sector position. A gain this large in one sector is worth the board noting: it is now $19,272 of paper profit riding on technology alone.
+                </div>
+            </div>
+
+            <div class="holding-card" style="border-left-color: #27ae60;">
+                <div class="holding-header">
+                    <div>
+                        <div class="holding-name">iShares Core S&amp;P Small-Cap ETF</div>
+                        <div style="font-size: 12px; color: #7f8c8d;">Tracks smaller U.S. companies</div>
+                    </div>
+                    <div>
+                        <span class="holding-ticker">IJR</span>
+                        <span class="risk-indicator risk-moderate">Moderate</span>
+                    </div>
+                </div>
+                <div class="holding-details">
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$42,778</div>
+                        <div class="holding-stat-label">Market Value</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">8%</div>
+                        <div class="holding-stat-label">% of Portfolio</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value positive">+$7,731</div>
+                        <div class="holding-stat-label">Unrealized Gain (+22%)</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$486</div>
+                        <div class="holding-stat-label">Est. Annual Income</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; font-size: 13px; color: #7f8c8d;">
+                    296 shares at $144.52. Smaller companies are more volatile than large ones but add diversification. Cost basis $35,046.
+                </div>
+            </div>
+
+            <div class="holding-card" style="border-left-color: #27ae60;">
+                <div class="holding-header">
+                    <div>
+                        <div class="holding-name">Vanguard Mid-Cap Growth ETF</div>
+                        <div style="font-size: 12px; color: #7f8c8d;">Medium-sized U.S. growth companies</div>
+                    </div>
+                    <div>
+                        <span class="holding-ticker">VOT</span>
+                        <span class="risk-indicator risk-moderate">Moderate</span>
+                    </div>
+                </div>
+                <div class="holding-details">
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$38,962</div>
+                        <div class="holding-stat-label">Market Value</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">7%</div>
+                        <div class="holding-stat-label">% of Portfolio</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value positive">+$4,029</div>
+                        <div class="holding-stat-label">Unrealized Gain (+12%)</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$235</div>
+                        <div class="holding-stat-label">Est. Annual Income</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; font-size: 13px; color: #7f8c8d;">
+                    129 shares at $302.03. Fills the gap between large and small companies. Cost basis $34,933.
+                </div>
+            </div>
+
+            <div class="holding-card" style="border-left-color: #e67e22;">
+                <div class="holding-header">
+                    <div>
+                        <div class="holding-name">Financial Select Sector SPDR ETF</div>
+                        <div style="font-size: 12px; color: #7f8c8d;">Banks, insurers and financial services</div>
+                    </div>
+                    <div>
+                        <span class="holding-ticker">XLF</span>
+                        <span class="risk-indicator risk-higher">Higher Risk</span>
+                    </div>
+                </div>
+                <div class="holding-details">
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$7,964</div>
+                        <div class="holding-stat-label">Market Value</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">1%</div>
+                        <div class="holding-stat-label">% of Portfolio</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value positive">+$990</div>
+                        <div class="holding-stat-label">Unrealized Gain (+14%)</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$111</div>
+                        <div class="holding-stat-label">Est. Annual Income</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; font-size: 13px; color: #7f8c8d;">
+                    138 shares at $57.71. The smallest position in the portfolio at just over 1%, small enough that it has little effect either way.
+                </div>
+            </div>
+
+            <div class="holding-card" style="border-left-color: #95a5a6;">
+                <div class="holding-header">
+                    <div>
+                        <div class="holding-name">Cash (Free Credit Balance)</div>
+                        <div style="font-size: 12px; color: #7f8c8d;">Uninvested cash awaiting reinvestment</div>
+                    </div>
+                    <div>
+                        <span class="risk-indicator risk-low">Low Risk</span>
+                    </div>
+                </div>
+                <div class="holding-details">
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">$219</div>
+                        <div class="holding-stat-label">Market Value</div>
+                    </div>
+                    <div class="holding-stat">
+                        <div class="holding-stat-value">0.04%</div>
+                        <div class="holding-stat-label">% of Portfolio</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Portfolio Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Holding</th>
+                        <th class="number">Market Value</th>
+                        <th class="number">Cost Basis</th>
+                        <th class="number">Unrealized Gain</th>
+                        <th class="number">% of Portfolio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Fidelity Government Cash Reserves (FDRXX)</td>
+                        <td class="number">$337,584.00</td>
+                        <td class="number">n/a</td>
+                        <td class="number">n/a</td>
+                        <td class="number">59%</td>
+                    </tr>
+                    <tr>
+                        <td>SPDR S&amp;P 500 ETF (SPY)</td>
+                        <td class="number">$88,210.75</td>
+                        <td class="number">$69,834.33</td>
+                        <td class="number positive">+$18,376.42</td>
+                        <td class="number">15%</td>
+                    </tr>
+                    <tr>
+                        <td>Technology Select Sector SPDR (XLK)</td>
+                        <td class="number">$54,085.00</td>
+                        <td class="number">$34,813.05</td>
+                        <td class="number positive">+$19,271.95</td>
+                        <td class="number">9%</td>
+                    </tr>
+                    <tr>
+                        <td>iShares Core S&amp;P Small-Cap (IJR)</td>
+                        <td class="number">$42,777.92</td>
+                        <td class="number">$35,046.43</td>
+                        <td class="number positive">+$7,731.49</td>
+                        <td class="number">8%</td>
+                    </tr>
+                    <tr>
+                        <td>Vanguard Mid-Cap Growth (VOT)</td>
+                        <td class="number">$38,961.87</td>
+                        <td class="number">$34,933.08</td>
+                        <td class="number positive">+$4,028.79</td>
+                        <td class="number">7%</td>
+                    </tr>
+                    <tr>
+                        <td>Financial Select Sector SPDR (XLF)</td>
+                        <td class="number">$7,963.98</td>
+                        <td class="number">$6,974.46</td>
+                        <td class="number positive">+$989.52</td>
+                        <td class="number">1%</td>
+                    </tr>
+                    <tr>
+                        <td>Cash</td>
+                        <td class="number">$219.24</td>
+                        <td class="number">n/a</td>
+                        <td class="number">n/a</td>
+                        <td class="number">0%</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Equity ETFs</td>
+                        <td class="number">$231,999.52</td>
+                        <td class="number">$181,601.35</td>
+                        <td class="number positive">+$50,398.17</td>
+                        <td class="number">41%</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td>TOTAL PORTFOLIO</td>
+                        <td class="number">$569,802.76</td>
+                        <td class="number">$181,601.35</td>
+                        <td class="number">+$50,398.17</td>
+                        <td class="number">100%</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
+                Cost basis is not tracked for the money market fund or cash, so the total cost basis column covers the equity ETFs only.
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Income &amp; Activity</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th class="number">August</th>
+                        <th class="number">Year-to-Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="tooltip">Dividends
+                            <span class="tooltiptext">Paid mostly by the money market fund and automatically reinvested, so the cash never leaves the account.</span>
+                        </td>
+                        <td class="number">$970.33</td>
+                        <td class="number">$8,624.45</td>
+                    </tr>
+                    <tr>
+                        <td>Interest</td>
+                        <td class="number">$0.32</td>
+                        <td class="number">$1.95</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Income</td>
+                        <td class="number">$970.65</td>
+                        <td class="number">$8,626.40</td>
+                    </tr>
+                    <tr>
+                        <td class="tooltip">Management Fees
+                            <span class="tooltiptext">Advisory fees charged by Pochop Financial Management, the independent advisor on the account. $2,415 year to date, about 0.42% of assets.</span>
+                        </td>
+                        <td class="number">n/a</td>
+                        <td class="number">($2,414.92)</td>
+                    </tr>
+                    <tr>
+                        <td>Change in Investment Value</td>
+                        <td class="number positive">+$7,174.26</td>
+                        <td class="number positive">+$41,313.22</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td>NET CHANGE</td>
+                        <td class="number">+$7,174.26</td>
+                        <td class="number">+$38,898.30</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="info-box">
+                <strong>Estimated forward income:</strong> Fidelity projects about <strong>$13,928</strong> over the next twelve months from current holdings, $12,000 of it from the money market fund. That is roughly 2.4% of the portfolio, arriving without selling anything.
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Questions for the Board</h3>
+            <ul style="margin-left: 20px; line-height: 2;">
+                <li><strong>Cash versus invested.</strong> The camp holds $633K in bank accounts against $570K invested, after a season that generated a surplus. Whether to move more into the portfolio is a November decision.</li>
+                <li><strong>Fee reasonableness.</strong> $2,415 year to date, about 0.42% of assets. Worth a periodic check against alternatives.</li>
+                <li><strong>Target allocation.</strong> 59/41 has held steady for two quarters. Is that the documented target, or simply where it has landed?</li>
+            </ul>
+        </div>
+
+        <div class="nav-links">
+            <a href="/" style="background: #2c3e50;">Home</a>
+            <a href="Financial-Dashboard.html">Dashboard</a>
+            <a href="Budget-vs-Actuals-Interactive.html">Budget vs Actuals</a>
+            <a href="Statement-of-Activity-Interactive.html">Statement of Activity</a>
+            <a href="Statement-of-Financial-Position-Interactive.html">Balance Sheet</a>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 12px;">
+            Camp Downer, Inc. | September 30, 2026 Board Meeting | Fidelity Account 637-396978 | Statement period August 1 &ndash; 31, 2026
+        </footer>
+    </div>
+</body>
+</html>
